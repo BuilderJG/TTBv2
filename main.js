@@ -54,21 +54,48 @@ function page(selectedPage) { // selectedPage: String = htmlId
 
 // --- Funktionen Start ---
 
+    // überprüft, ob eine Variable ein Objekt ist
+function isObject(x) {
+    return (typeof x === "object" && !Array.isArray(x) && x !== null)
+
+}
+
     // repariert das eingegebene Daten-Objekt
 function repairData(data) { // data: object = TTB-Data
     let output = {}
+
     // members
     output["members"] = {}
+    let member_groups = []
     if (data.hasOwnProperty("members")) {
         for (let member in data["members"]) {
             if (typeof member === "string") {
                 output["members"][member] = {"groups": []}
-                for (let property in data["members"][member]) {
-                    if (output["members"][member].hasOwnProperty(property)) {
-                        output["members"][member][property] = data["members"][member][property];
+                // property: groups
+                if (isObject(data["members"][member]) && data["members"][member].hasOwnProperty("groups")) {
+                    for (let group in data["members"][member]["groups"]) {
+                        if (typeof group === "string") {
+                            output["members"][member]["groups"].push(group)
+                            member_groups.push(group)
+                        }
                     }
                 }
             }
+        }
+    }
+
+    // groups
+    output["groups"] = {}
+    if (data.hasOwnProperty("groups")) {
+        for (let group in data["groups"]) {
+            if (typeof group === "string") {
+                output["groups"][group] = {}
+            }
+        }
+    }
+    for (let group in member_groups) {
+        if (!output["groups"].hasOwnProperty(group)) {
+            output["groups"][group] = {}
         }
     }
 
