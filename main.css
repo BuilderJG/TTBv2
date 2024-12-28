@@ -1,3 +1,7 @@
+* {
+    transition: 0.5s;
+}
+
 body {
     font-family: "Fira Sans", "Open Sans", Helvetica, Arial, sans-serif;
     margin: 0;
@@ -12,7 +16,6 @@ button {
     color: white;
     background-color: #1E3990;
     padding: 5px;
-    transition: 0.3s;
 }
 
 button:hover, button:disabled {
@@ -31,7 +34,6 @@ input::file-selector-button {
     color: white;
     background-color: #1E3990;
     padding: 5px;
-    transition: 0.3s;
     border-right: 1px solid black;
 }
 
@@ -72,11 +74,11 @@ h3 {
 
 .page {
     display: none;
-    margin-top: 120px;
-    padding: 15px;
+    margin-top: 7em;
+    padding: 1.5em;
 }
 
-#toggleNav {
+#ToggleNav {
     font-size: 40px;
     cursor: pointer;
 }
@@ -91,7 +93,6 @@ nav {
     background-color: #111;
     overflow-x: hidden;
     padding-top: 60px;
-    transition: 0.5s;
 }
 
 nav a {
@@ -100,7 +101,6 @@ nav a {
     font-size: 25px;
     color: #506bc2;
     display: block;
-    transition: 0.3s;
     cursor: pointer;
 }
 
@@ -113,16 +113,15 @@ header {
     top: 0;
     left: 0;
     background-color: #1E3990;
-    display: inline-block;
-    height: auto;
+    display: flex;
+    height: 5em;
     width: 100%;
     color: white;
     list-style: none;
     margin: 0;
     font-size: x-large;
-    vertical-align: top;
+    align-items: center;
     z-index: 1;
-    transition: 0.5s;
 }
 
 header li {
@@ -132,14 +131,9 @@ header li {
     font-size: x-large;
 }
 
-main {
-    transition: margin-left .5s;
-}
-
 table {
     width: 99%;
     text-align: left;
-    background-color: black;
     border-collapse: collapse;
     border-spacing: 0;
     margin: 0 auto;
@@ -147,7 +141,6 @@ table {
 
 tr {
     background-color: #f6f6f6;
-    transition: 0.5s;
 }
 
 tr:nth-child(odd) {
