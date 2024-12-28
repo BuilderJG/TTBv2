@@ -19,7 +19,6 @@ function toggleNav() {
     let nav = document.getElementsByTagName("nav")[0];
     let content = document.getElementsByTagName("main")[0];
     let header = document.getElementsByTagName("header")[0];
-    console.log(nav.st)
     if (nav.style.width === "") {
         nav.style.width = "250px"
         content.style.marginLeft = "250px"
