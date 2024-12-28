@@ -1,14 +1,13 @@
 // --- Setup Start ---
 
 // Öffnet die erste verfügbare Seite
-page(document.getElementsByClassName("page")[0].id)
 let data = {"members": {"Chihabi, Mohammad": {"groups": ["1. Thor"]}, "Gnieser, Jannik": {"groups": ["1. Thor"]}, "Kusz, Emma": {"groups": ["1. Thor"]}, "Schell, Simon": {"groups": ["1. Thor"]}, "Topel, Felix": {"groups": ["1. Thor"]}}}
 if (localStorage.getItem("data")) {
     data = JSON.parse(localStorage.getItem("data"))
 } else {
     localStorage.setItem("data", JSON.stringify(data))
 }
-
+page(document.getElementsByClassName("page")[0].id)
 // --- Setup Ende ---
 
 // --- Basis Start ---
@@ -33,9 +32,15 @@ function toggleNav() {
 // Zeigt die ausgewählte Seite an
 function page(selectedPage) { // selectedPage: String = htmlId
     let pages = Array.from(document.getElementsByClassName("page"));
+    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder]}
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
             pages[i].style.display = "block"
+            if (pageFunctions.hasOwnProperty(selectedPage)) { // Führt die Funktionen aus, die mit der Seite verknüpft sind
+                for (let j in pageFunctions[selectedPage]) {
+                    pageFunctions[selectedPage][j]();
+                }
+            }
         } else {
             pages[i].style.display = "none";
         }
@@ -45,4 +50,12 @@ function page(selectedPage) { // selectedPage: String = htmlId
 // --- Basis Ende ---
 
 // --- Verwaltung Start ---
+function verwaltungUpdateTableMitglieder() { // Legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
+    let table = document.getElementById("VerwaltungTabelleMitglieder");
+    let content = `<tr><th>Name</th></tr>`
+    for (let member in data["members"]) {
+        content += `<tr><td onclick="">${member}</td></tr>`;
+    }
+    table.innerHTML = content;
+}
 // --- Verwaltung Ende ---
