@@ -1,7 +1,7 @@
 // --- Setup Start ---
 
-    // Lädt die Daten aus dem Local Storage bzw. füllt diese mit Beispielinhalten
-let data = {"members": {"Chihabi, Mohammad": {"groups": ["1. Thor"]}, "Gnieser, Jannik": {"groups": ["1. Thor"]}, "Kusz, Emma": {"groups": ["1. Thor"]}, "Schell, Simon": {"groups": ["1. Thor"]}, "Topel, Felix": {"groups": ["1. Thor"]}}}
+    // Lädt die Daten aus dem Local Storage
+let data = {}
 if (localStorage.getItem("data")) {
     data = JSON.parse(localStorage.getItem("data"))
 }
