@@ -49,6 +49,27 @@ function page(selectedPage) { // selectedPage: String = htmlId
     }
 }
 
+    // erlaubt das Scrollen nur, wenn kein Dialog-Element geöffnet ist
+let open_dialogs = 0
+let dialogElements = Array.from(document.getElementsByTagName("dialog"))
+for (let i in dialogElements) {
+    dialogElements[i].addEventListener("close", () => {
+        open_dialogs -= 1
+        if (open_dialogs === 0) {
+            document.getElementsByTagName("body")[0].style.overflowY = "auto"
+        }
+    })
+}
+
+    // öffnet das Dialog-Element mit der angegebenen ID
+function open_dialog(dialogId) { //dialogId: string = HTML-ID
+    open_dialogs += 1
+    if (open_dialogs === 1) {
+        document.getElementsByTagName("body")[0].style.overflowY = "hidden"
+    }
+    document.getElementById(dialogId).showModal()
+}
+
 // --- Basis Ende ---
 
 // --- Funktionen Start ---
