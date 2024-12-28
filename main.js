@@ -4,9 +4,9 @@
 let data = {"members": {"Chihabi, Mohammad": {"groups": ["1. Thor"]}, "Gnieser, Jannik": {"groups": ["1. Thor"]}, "Kusz, Emma": {"groups": ["1. Thor"]}, "Schell, Simon": {"groups": ["1. Thor"]}, "Topel, Felix": {"groups": ["1. Thor"]}}}
 if (localStorage.getItem("data")) {
     data = JSON.parse(localStorage.getItem("data"))
-} else {
-    localStorage.setItem("data", JSON.stringify(data))
 }
+data = repairData(data)
+localStorage.setItem("data", JSON.stringify(data))
 
     // Öffnet die erste verfügbare Seite
 page(document.getElementsByClassName("page")[0].id)
@@ -53,6 +53,28 @@ function page(selectedPage) { // selectedPage: String = htmlId
 // --- Basis Ende ---
 
 // --- Funktionen Start ---
+
+    // repariert das eingegebene Daten-Objekt
+function repairData(data) { // data: object = TTB-Data
+    let output = {}
+    // members
+    output["members"] = {}
+    if (data.hasOwnProperty("members")) {
+        for (let member in data["members"]) {
+            if (typeof member === "string") {
+                output["members"][member] = {"groups": []}
+                for (let property in data["members"][member]) {
+                    if (output["members"][member].hasOwnProperty(property)) {
+                        output["members"][member][property] = data["members"][member][property];
+                    }
+                }
+            }
+        }
+    }
+
+    return output;
+}
+
 // --- Funktionen Ende ---
 
 // --- Verwaltung Start ---
