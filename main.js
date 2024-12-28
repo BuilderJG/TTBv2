@@ -73,9 +73,12 @@ function repairData(data) { // data: object = TTB-Data
                 // property: groups
                 if (isObject(data["members"][member]) && data["members"][member].hasOwnProperty("groups")) {
                     for (let group in data["members"][member]["groups"]) {
-                        if (typeof group === "string") {
-                            output["members"][member]["groups"].push(group)
-                            member_groups.push(group)
+                        let groupName = data["members"][member]["groups"][group]
+                        if (typeof groupName === "string") {
+                            output["members"][member]["groups"].push(data["members"][member]["groups"][group])
+                            if (!member_groups.includes(data["members"][member]["groups"][group])) {
+                                member_groups.push(data["members"][member]["groups"][group])
+                            }
                         }
                     }
                 }
@@ -93,8 +96,8 @@ function repairData(data) { // data: object = TTB-Data
         }
     }
     for (let group in member_groups) {
-        if (!output["groups"].hasOwnProperty(group)) {
-            output["groups"][group] = {}
+        if (!output["groups"].hasOwnProperty(member_groups[group])) {
+            output["groups"][member_groups[group]] = {}
         }
     }
 
