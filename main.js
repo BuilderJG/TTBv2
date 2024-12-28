@@ -34,7 +34,7 @@ function toggleNav() {
     // Zeigt die ausgewählte Seite an
 function page(selectedPage) { // selectedPage: String = htmlId
     let pages = Array.from(document.getElementsByClassName("page"));
-    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
+    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
             pages[i].style.display = "block"
@@ -111,9 +111,19 @@ function repairData(data) { // data: object = TTB-Data
     // legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
 function verwaltungUpdateTableMitglieder() {
     let table = document.getElementById("VerwaltungTabelleMitglieder");
-    let content = `<tr><th>Name</th></tr>`
+    let content = `<tr><th>Mitglieder</th></tr>`
     for (let member in data["members"]) {
         content += `<tr><td onclick="">${member}</td></tr>`;
+    }
+    table.innerHTML = content;
+}
+
+    // legt für jede Gruppe aus den Daten eine Reihe in der Tabelle an
+function verwaltungUpdateTableGruppen() {
+    let table = document.getElementById("VerwaltungTabelleGruppen");
+    let content = `<tr><th>Gruppen</th></tr>`
+    for (let group in data["groups"]) {
+        content += `<tr><td onclick="">${group}</td></tr>`;
     }
     table.innerHTML = content;
 }
