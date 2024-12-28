@@ -17,7 +17,6 @@ page(document.getElementsByClassName("page")[0].id)
 
     // Zeigt bzw. versteckt die Navigationsleiste
 function toggleNav() {
-    console.log("toggle nav");
     let nav = document.getElementsByTagName("nav")[0];
     let content = document.getElementsByTagName("main")[0];
     let header = document.getElementsByTagName("header")[0];
