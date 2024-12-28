@@ -1,48 +1,45 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>ThorToolBox</title>
-  <link rel="stylesheet" href="main.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <title>ThorToolBox</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 <header>
-  <ul>
-    <li><span id="ToggleNav" onclick="toggleNav()">&#9776;</span></li>
-    <li><h1>TTB</h1></li>
-  </ul>
+    <ul>
+        <li><span id="ToggleNav" onclick="toggleNav()">&#9776;</span></li>
+        <li><h1>TTB</h1></li>
+    </ul>
 </header>
 <nav>
-  <a onclick="page('Anwesenheit')">Anwesenheit</a>
-  <a onclick="page('Einteilung')">Einteilung</a>
-  <a onclick="page('Verwaltung')">Verwaltung</a>
-  <a onclick="page('Einstellungen')">Einstellungen</a>
+    <a onclick="page('Anwesenheit')">Anwesenheit</a>
+    <a onclick="page('Einteilung')">Einteilung</a>
+    <a onclick="page('Verwaltung')">Verwaltung</a>
+    <a onclick="page('Einstellungen')">Einstellungen</a>
 </nav>
 <main>
-  <div class="page" id="Verwaltung">
-    <h2>Verwaltung</h2>
-    <table id="VerwaltungTabelleMitglieder">
-      <tr>
-        <th>Name</th>
-      </tr>
-      <tr>
-        <td onclick="">Chihabi, Mohammad</td>
-      </tr>
-      <tr>
-        <td onclick="">Gnieser, Jannik</td>
-      </tr>
-      <tr>
-        <td onclick="">Kusz, Emma</td>
-      </tr>
-      <tr>
-        <td onclick="">Schell, Simon</td>
-      </tr>
-      <tr>
-        <td onclick="">Topel, Felix</td>
-      </tr>
-    </table>
-  </div>
+    <div class="page" id="Verwaltung">
+        <h2>Verwaltung</h2>
+        <table id="VerwaltungTabelleMitglieder">
+            <tr>
+                <td onclick="">Chihabi, Mohammad</td>
+            </tr>
+            <tr>
+                <td onclick="">Gnieser, Jannik</td>
+            </tr>
+            <tr>
+                <td onclick="">Kusz, Emma</td>
+            </tr>
+            <tr>
+                <td onclick="">Schell, Simon</td>
+            </tr>
+            <tr>
+                <td onclick="">Topel, Felix</td>
+            </tr>
+        </table>
+    </div>
 </main>
 <script src="main.js"></script>
 </body>
