@@ -1,6 +1,11 @@
-// Setup Start
-page(document.getElementsByClassName("page")[0])
-// Setup Ende
+// --- Setup Start ---
+
+// Öffnet die erste verfügbare Seite
+page(document.getElementsByClassName("page")[0].id)
+
+// --- Setup Ende ---
+
+// --- Basis Start ---
 
 // Zeigt bzw. versteckt die Navigationsleiste
 function toggleNav() {
@@ -31,3 +36,8 @@ function page(selectedPage) { // selectedPage: String = htmlId
         }
     }
 }
+
+// --- Basis Ende ---
+
+// --- Verwaltung Start ---
+// --- Verwaltung Ende ---
