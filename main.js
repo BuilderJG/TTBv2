@@ -2,6 +2,12 @@
 
 // Öffnet die erste verfügbare Seite
 page(document.getElementsByClassName("page")[0].id)
+let data = {"members": {"Chihabi, Mohammad": {"groups": ["1. Thor"]}, "Gnieser, Jannik": {"groups": ["1. Thor"]}, "Kusz, Emma": {"groups": ["1. Thor"]}, "Schell, Simon": {"groups": ["1. Thor"]}, "Topel, Felix": {"groups": ["1. Thor"]}}}
+if (localStorage.getItem("data")) {
+    data = JSON.parse(localStorage.getItem("data"))
+} else {
+    localStorage.setItem("data", JSON.stringify(data))
+}
 
 // --- Setup Ende ---
 
