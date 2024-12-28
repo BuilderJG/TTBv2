@@ -1,18 +1,21 @@
 // --- Setup Start ---
 
-// Öffnet die erste verfügbare Seite
+    // Lädt die Daten aus dem Local Storage bzw. füllt diese mit Beispielinhalten
 let data = {"members": {"Chihabi, Mohammad": {"groups": ["1. Thor"]}, "Gnieser, Jannik": {"groups": ["1. Thor"]}, "Kusz, Emma": {"groups": ["1. Thor"]}, "Schell, Simon": {"groups": ["1. Thor"]}, "Topel, Felix": {"groups": ["1. Thor"]}}}
 if (localStorage.getItem("data")) {
     data = JSON.parse(localStorage.getItem("data"))
 } else {
     localStorage.setItem("data", JSON.stringify(data))
 }
+
+    // Öffnet die erste verfügbare Seite
 page(document.getElementsByClassName("page")[0].id)
+
 // --- Setup Ende ---
 
 // --- Basis Start ---
 
-// Zeigt bzw. versteckt die Navigationsleiste
+    // Zeigt bzw. versteckt die Navigationsleiste
 function toggleNav() {
     console.log("toggle nav");
     let nav = document.getElementsByTagName("nav")[0];
@@ -29,10 +32,10 @@ function toggleNav() {
     }
 }
 
-// Zeigt die ausgewählte Seite an
+    // Zeigt die ausgewählte Seite an
 function page(selectedPage) { // selectedPage: String = htmlId
     let pages = Array.from(document.getElementsByClassName("page"));
-    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder]}
+    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
             pages[i].style.display = "block"
@@ -49,8 +52,13 @@ function page(selectedPage) { // selectedPage: String = htmlId
 
 // --- Basis Ende ---
 
+// --- Funktionen Start ---
+// --- Funktionen Ende ---
+
 // --- Verwaltung Start ---
-function verwaltungUpdateTableMitglieder() { // Legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
+
+    // legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
+function verwaltungUpdateTableMitglieder() {
     let table = document.getElementById("VerwaltungTabelleMitglieder");
     let content = `<tr><th>Name</th></tr>`
     for (let member in data["members"]) {
@@ -58,4 +66,5 @@ function verwaltungUpdateTableMitglieder() { // Legt für jedes Mitglied aus den
     }
     table.innerHTML = content;
 }
+
 // --- Verwaltung Ende ---
