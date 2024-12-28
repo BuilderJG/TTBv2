@@ -48,8 +48,8 @@ input {
 }
 
 input[type="checkbox"] {
-    height: 1.15em;
-    width: 1.15em;
+    height: 1lh;
+    width: 1lh;
     cursor: pointer;
 }
 
@@ -61,6 +61,7 @@ select {
 }
 
 label {
+    padding: 3px;
     cursor: pointer;
     -webkit-user-select: none;
     -ms-user-select: none;
