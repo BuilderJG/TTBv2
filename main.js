@@ -83,29 +83,29 @@ function open_dialog(dialogId) { //dialogId: string = HTML-ID
     document.getElementById(dialogId).showModal()
 }
 
-function confirm_popup(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
-    let elem_popup = document.getElementById("confirm-popup")
-
+    // Funktion, um einen simplen Dialog mit zwei Auswahlmöglichkeiten zu erstellen
+function confirm_dialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
+    let elem_dialog = document.getElementById("confirm-popup")
     document.getElementById("confirm-popup-title").innerHTML = title
     document.getElementById("confirm-popup-description").innerHTML = desc
     let btn1 = document.getElementById("confirm-popup-btn1")
     btn1.innerHTML = btn1_txt
     btn1.onclick = function () {
-        elem_popup.close();
-        do_nothing()
+        elem_dialog.close();
+        btn1_fnc()
     }
     let btn2 = document.getElementById("confirm-popup-btn2")
     btn2.innerHTML = btn2_txt
     btn2.onclick = function () {
-        elem_popup.close();
+        elem_dialog.close();
         btn2_fnc()
     }
 
-    open_dialog(elem_popup)
+    open_dialog("confirm-popup")
 }
 
-function do_nothing() {
-}
+    // leere Funktion, wird verwendet, um einen Knopf des confirm_dialog Dialogs (z.B. Abbrechen) lediglich den Dialog schließen zu lassen
+function do_nothing() {}
 
 // --- Basis Ende ---
 
