@@ -126,6 +126,15 @@ function download(data, filename, type) {
     }
 }
 
+function toggleTableVisibility(tableId) {
+    let table = document.getElementById(tableId)
+    if (table.classList.contains("hidden")) {
+        table.classList.remove("hidden")
+    } else {
+        table.classList.add("hidden")
+    }
+}
+
 // --- Basis Ende ---
 
 // --- Funktionen Start ---
@@ -188,7 +197,7 @@ function repairData(data) { // data: object = TTB-Data
     // legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
 function verwaltungUpdateTableMitglieder() {
     let table = document.getElementById("VerwaltungTabelleMitglieder");
-    let content = `<tr><th>Mitglieder</th></tr>`
+    let content = `<tr><th>Mitglieder <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleMitglieder')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let member in data["members"]) {
         content += `<tr><td onclick="">${member}</td></tr>`;
     }
@@ -198,7 +207,7 @@ function verwaltungUpdateTableMitglieder() {
     // legt für jede Gruppe aus den Daten eine Reihe in der Tabelle an
 function verwaltungUpdateTableGruppen() {
     let table = document.getElementById("VerwaltungTabelleGruppen");
-    let content = `<tr><th>Gruppen</th></tr>`
+    let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let group in data["groups"]) {
         content += `<tr><td onclick="">${group}</td></tr>`;
     }
