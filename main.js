@@ -49,6 +49,12 @@ function page(selectedPage) { // selectedPage: String = htmlId
     }
 }
 
+// ausschließlich zur Verwendung in der Navigationsleiste; schließt die Nav-Leiste und öffnet die angegebene Seite
+function navPage(selectedPage) {
+    page(selectedPage)
+    toggleNav()
+}
+
     // erlaubt das Scrollen nur, wenn kein Dialog-Element geöffnet ist
 let open_dialogs = 0
 let dialogElements = Array.from(document.getElementsByTagName("dialog"))
@@ -199,7 +205,7 @@ function verwaltungUpdateTableMitglieder() {
     let table = document.getElementById("VerwaltungTabelleMitglieder");
     let content = `<tr><th>Mitglieder <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleMitglieder')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let member in data["members"]) {
-        content += `<tr><td onclick="">${member}</td></tr>`;
+        content += `<tr><td onclick="verwaltungDialogMitgliedBearbeiten('${member}')">${member}</td></tr>`;
     }
     table.innerHTML = content;
 }
@@ -209,9 +215,19 @@ function verwaltungUpdateTableGruppen() {
     let table = document.getElementById("VerwaltungTabelleGruppen");
     let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let group in data["groups"]) {
-        content += `<tr><td onclick="">${group}</td></tr>`;
+        content += `<tr><td onclick="verwaltungDialogGruppeBearbeiten('${group}')">${group}</td></tr>`;
     }
     table.innerHTML = content;
+}
+
+    // Öffnet den Dialog zum Bearbeiten eines Mitglieds
+function verwaltungDialogMitgliedBearbeiten(name) {
+    open_dialog("VerwaltungDialogMitgliedBearbeiten")
+}
+
+    // Öffnet den Dialog zum Bearbeiten einer Gruppe
+function verwaltungDialogGruppeBearbeiten(name) {
+    open_dialog("VerwaltungDialogMitgliedBearbeiten")
 }
 
 // --- Verwaltung Ende ---

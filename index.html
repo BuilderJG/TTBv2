@@ -15,10 +15,10 @@
     </ul>
 </header>
 <nav>
-    <a onclick="page('Anwesenheit')">Anwesenheit</a>
-    <a onclick="page('Einteilung')">Einteilung</a>
-    <a onclick="page('Verwaltung')">Verwaltung</a>
-    <a onclick="page('Einstellungen')">Einstellungen</a>
+    <a onclick="navPage('Anwesenheit')">Anwesenheit</a>
+    <a onclick="navPage('Einteilung')">Einteilung</a>
+    <a onclick="navPage('Verwaltung')">Verwaltung</a>
+    <a onclick="navPage('Einstellungen')">Einstellungen</a>
 </nav>
 <main>
     <div class="page" id="Verwaltung">
@@ -27,6 +27,20 @@
         <hr>
         <table id="VerwaltungTabelleGruppen"></table>
     </div>
+    <dialog class="full-screen-dialog" id="VerwaltungDialogMitgliedBearbeiten">
+        <h2>Mitglied bearbeiten</h2>
+        <label for="VerwaltungDialogMitgliedBearbeitenName">Name: <input type="text" id="VerwaltungDialogMitgliedBearbeitenName"></label>
+        <h3>Gruppen:</h3>
+        <div id="VerwaltungDialogMitgliedBearbeitenGruppen">
+            <label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_0">Thor</label>
+        </div>
+        <div class="bottom-buttons">
+            <button id="VerwaltungDialogMitgliedBearbeitenSpeichern">speichern</button>
+            <button id="VerwaltungDialogMitgliedBearbeitenAbbrechen">abbrechen</button>
+            <button id="VerwaltungDialogMitgliedErstellenAbbrechen">abbrechen</button>
+            <button id="VerwaltungDialogMitgliedBearbeitenLöschen" class="dangerous_button">Mitglied löschen</button>
+        </div>
+    </dialog>
     <div class="page" id="Einstellungen">
         <h2>Einstellungen</h2>
         <input type="file" id="Einstellungen_input_import_data" accept=".json">
