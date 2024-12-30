@@ -16,6 +16,7 @@ button {
     color: white;
     background-color: #1E3990;
     padding: 5px;
+    margin-bottom: 5px;
 }
 
 button:hover, button:disabled {
@@ -192,12 +193,13 @@ dialog.full-screen-popup {
     clear: left;
 }
 
-dialog.full-screen-popup .bottom-buttons {
+dialog .bottom-buttons {
     text-align: center;
     position: absolute;
     bottom: 0;
-    padding: 1.5em;
-    width: 95%
+    padding-bottom: 1.5em;
+    width: calc(100% - 2rem);
+    box-sizing: content-box;
 }
 
 dialog .dialog-content {
@@ -206,4 +208,24 @@ dialog .dialog-content {
     margin: 0;
     width: 100%;
     min-height: 75vh;
+}
+
+.dialog-close-button {
+    font-size: x-large;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    padding: 3px;
+    cursor: pointer;
+    width: 1lh;
+    height: 1lh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.dialog-close-button:hover {
+    background-color: lightcoral;
 }

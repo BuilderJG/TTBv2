@@ -63,7 +63,7 @@ for (let i in dialogElements) {
 
     // schließt das Dialog-Element, sobald außerhalb von diesem geklickt wird
 for (let i in dialogElements) {
-    dialogElements[i].innerHTML = `<div class="dialog-content">${dialogElements[i].innerHTML}</div>`
+    dialogElements[i].innerHTML = `<div class="dialog-content"><a onclick="document.getElementById('${dialogElements[i].id}').close()" class="dialog-close-button">&#10005;</a>${dialogElements[i].innerHTML}</div>`
     dialogElements[i].addEventListener("click", () => dialogElements[i].close())
 }
 let dialogContentDivs = document.getElementsByClassName("dialog-content")
