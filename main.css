@@ -238,3 +238,27 @@ dialog.full-screen-dialog .dialog-content {
 .dialog-close-button:hover {
     background-color: lightcoral;
 }
+
+#confirm-dialog {
+    text-align: center;
+}
+
+#confirm-dialog-btn1 {
+    color: black;
+    border-color: black;
+    background-color: lightgreen;
+}
+
+#confirm-dialog-btn1:hover {
+    background: none;
+}
+
+#confirm-dialog-btn2 {
+    color: black;
+    border-color: black;
+    background-color: lightcoral;
+}
+
+#confirm-dialog-btn2:hover {
+    background: none;
+}
