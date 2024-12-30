@@ -165,6 +165,8 @@ hr {
 }
 
 dialog {
+    box-sizing: content-box;
+    padding: 0;
     border: 1px solid black;
 }
 
@@ -174,20 +176,18 @@ dialog::backdrop {
 }
 
 dialog.full-screen-popup {
-    box-sizing: content-box;
-    position: absolute;
     text-align: center;
     min-width: 75vw;
     min-height: 75vh;
 }
 
-dialog div {
+.dialog-content div {
     width: fit-content;
     margin: 0 auto;
     text-align: left;
 }
 
-dialog div label {
+.dialog-content div label {
     float: left;
     clear: left;
 }
@@ -198,4 +198,12 @@ dialog.full-screen-popup .bottom-buttons {
     bottom: 0;
     padding: 1.5em;
     width: 95%
+}
+
+dialog .dialog-content {
+    box-sizing: border-box;
+    padding: 1rem;
+    margin: 0;
+    width: 100%;
+    min-height: 75vh;
 }

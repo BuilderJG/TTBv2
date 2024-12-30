@@ -61,6 +61,19 @@ for (let i in dialogElements) {
     })
 }
 
+    // schließt das Dialog-Element, sobald außerhalb von diesem geklickt wird
+for (let i in dialogElements) {
+    dialogElements[i].innerHTML = `<div class="dialog-content">${dialogElements[i].innerHTML}</div>`
+    dialogElements[i].addEventListener("click", () => dialogElements[i].close())
+}
+let dialogContentDivs = document.getElementsByClassName("dialog-content")
+for (let i in dialogContentDivs) {
+    if (typeof dialogContentDivs[i] === "object") {
+        dialogContentDivs[i].addEventListener("click", (event) => event.stopPropagation())
+    }
+}
+
+
     // öffnet das Dialog-Element mit der angegebenen ID
 function open_dialog(dialogId) { //dialogId: string = HTML-ID
     open_dialogs += 1
