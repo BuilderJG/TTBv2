@@ -171,13 +171,16 @@ dialog {
     padding: 0;
     border: 1px solid black;
 }
+dialog h2 {
+    text-align: center;
+}
 
 dialog::backdrop {
     background-color: black;
     opacity: 0.8;
 }
 
-dialog.full-screen-popup {
+dialog.full-screen-dialog {
     text-align: center;
     min-width: 75vw;
     min-height: 75vh;
@@ -207,7 +210,12 @@ dialog .dialog-content {
     box-sizing: border-box;
     padding: 1rem;
     margin: 0;
+    min-width: 24em;
     width: 100%;
+    min-height: 12em;
+}
+
+dialog.full-screen-dialog .dialog-content {
     min-height: 75vh;
 }
 
