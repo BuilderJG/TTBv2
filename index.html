@@ -29,6 +29,13 @@
         <hr>
         <table id="VerwaltungTabelleGruppen"></table>
     </div>
+    <div class="page" id="Einstellungen">
+        <h2>Einstellungen</h2>
+        <input type="file" id="Einstellungen_input_import_data" accept=".json">
+        <button class="dangerous_button" onclick="confirm_dialog('Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?', 'Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', do_nothing, 'Fortfahren', einstellungenImportJsonData)">Daten importieren</button>
+        <br>
+        <button onclick="download(JSON.stringify(data), 'data.json', 'text/plain')">Daten exportieren</button>
+    </div>
     <dialog id="confirm-dialog">
         <h2 id="confirm-dialog-title"></h2>
         <p id="confirm-dialog-description"></p>

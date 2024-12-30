@@ -107,6 +107,25 @@ function confirm_dialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
     // leere Funktion, wird verwendet, um einen Knopf des confirm_dialog Dialogs (z.B. Abbrechen) lediglich den Dialog schließen zu lassen
 function do_nothing() {}
 
+    // erstellt eine Datei mit den angegebenen Eigenschaften und lädt diese automatisch herunter
+function download(data, filename, type) {
+    let file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        let a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
 // --- Basis Ende ---
 
 // --- Funktionen Start ---
@@ -187,3 +206,26 @@ function verwaltungUpdateTableGruppen() {
 }
 
 // --- Verwaltung Ende ---
+
+// --- Einstellungen Start ---
+
+    // importiert die Daten aus der angegebenen Datei in dem Input-Feld in den Einstellungen
+function einstellungenImportJsonData() {
+    let file_to_read = document.getElementById("Einstellungen_input_import_data").files[0];
+    let file_read = new FileReader();
+    file_read.onload = function (e) {
+        data = repairData(JSON.parse(e.target.result.toString()))
+        localStorage.setItem("data", JSON.stringify(data))
+        page('Verwaltung')
+    };
+    file_read.readAsText(file_to_read);
+}
+
+    // überschreibt die gespeicherten Daten mit Beispiel-Daten
+function einstellungenResetData() {
+    data = repairData({"members": {"Mitglied 1": {"groups": ["Gruppe 1"]}}, "groups": ["Gruppe 1"]})
+    localStorage.setItem("data", JSON.stringify(data))
+    page('Verwaltung')
+}
+
+// --- Einstellungen Ende ---
