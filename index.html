@@ -35,6 +35,8 @@
         <button class="dangerous_button" onclick="confirm_dialog('Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?', 'Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', do_nothing, 'Fortfahren', einstellungenImportJsonData)">Daten importieren</button>
         <br>
         <button onclick="download(JSON.stringify(data), 'data.json', 'text/plain')">Daten exportieren</button>
+        <hr>
+        <button class="dangerous_button" onclick="confirm_dialog('Bist du sicher, dass du alle bestehenden Daten löschen möchtest?', 'Du bist kurz davor, alle Daten zu löschen. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', do_nothing, 'Fortfahren', einstellungenResetData)">alle Daten löschen</button>
     </div>
     <dialog id="confirm-dialog">
         <h2 id="confirm-dialog-title"></h2>
