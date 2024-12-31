@@ -28,7 +28,7 @@
         <table id="VerwaltungTabelleGruppen"></table>
     </div>
     <dialog class="full-screen-dialog" id="VerwaltungDialogMitgliedBearbeiten">
-        <h2>Mitglied bearbeiten</h2>
+        <h2 id="VerwaltungDialogMitgliedBearbeitenTitel">Mitglied bearbeiten</h2>
         <label for="VerwaltungDialogMitgliedBearbeitenName">Name: <input type="text" id="VerwaltungDialogMitgliedBearbeitenName"></label>
         <h3>Gruppen:</h3>
         <div id="VerwaltungDialogMitgliedBearbeitenGruppen">
@@ -38,14 +38,13 @@
         <div class="bottom-buttons">
             <button id="VerwaltungDialogMitgliedBearbeitenSpeichern">speichern</button>
             <button id="VerwaltungDialogMitgliedBearbeitenAbbrechen">abbrechen</button>
-            <button id="VerwaltungDialogMitgliedErstellenAbbrechen">abbrechen</button>
             <button id="VerwaltungDialogMitgliedBearbeitenLöschen" class="dangerous_button">Mitglied löschen</button>
         </div>
     </dialog>
     <div class="page" id="Einstellungen">
         <h2>Einstellungen</h2>
         <input type="file" id="Einstellungen_input_import_data" accept=".json">
-        <button class="dangerous_button" onclick="confirm_dialog('Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?', 'Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', do_nothing, 'Fortfahren', einstellungenImportJsonData)">Daten importieren</button>
+        <button class="dangerous_button" onclick='if (!document.getElementById("Einstellungen_input_import_data").files[0]) {info_dialog("Keine Datei ausgewählt.", "Du hast keine Datei, die importiert werden soll, ausgewählt.", "Fortfahren", do_nothing)} else {confirm_dialog("Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?", "Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!", "Abbrechen", do_nothing, "Fortfahren", einstellungenImportJsonData)}'>Daten importieren</button>
         <br>
         <button onclick="download(JSON.stringify(data), 'data.json', 'text/plain')">Daten exportieren</button>
         <hr>
@@ -58,6 +57,14 @@
         <div class="bottom-buttons">
             <button id="confirm-dialog-btn1"></button>
             <button id="confirm-dialog-btn2"></button>
+        </div>
+    </dialog>
+    <dialog id="info-dialog">
+        <h2 id="info-dialog-title"></h2>
+        <p id="info-dialog-description"></p>
+        <div class="spacer"></div>
+        <div class="bottom-buttons">
+            <button id="info-dialog-btn"></button>
         </div>
     </dialog>
 </main>

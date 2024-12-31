@@ -1,12 +1,16 @@
 // --- Setup Start ---
 
+// grundlegenden Aufbau der Daten festlegen
+let dataEmptyMember = {"groups": []}
+let dataEmptyGroup = {}
+let dataExample = {"members": {"Mitglied 1": {"groups": ["Gruppe 1"]}}, "groups": {"Gruppe 1": {}}}
+
     // Lädt die Daten aus dem Local Storage
 let data = {}
 if (localStorage.getItem("data")) {
     data = JSON.parse(localStorage.getItem("data"))
 }
-data = repairData(data)
-localStorage.setItem("data", JSON.stringify(data))
+saveData(data)
 
     // Öffnet die erste verfügbare Seite
 page(document.getElementsByClassName("page")[0].id)
@@ -110,6 +114,21 @@ function confirm_dialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
     open_dialog("confirm-dialog")
 }
 
+// Funktion, um einen simplen Dialog mit einer Auswahlmöglichkeit zu erstellen
+function info_dialog(title, desc, btn_txt, btn_fnc) {
+    let elem_dialog = document.getElementById("info-dialog")
+    document.getElementById("info-dialog-title").innerHTML = title
+    document.getElementById("info-dialog-description").innerHTML = desc
+    let btn1 = document.getElementById("info-dialog-btn")
+    btn1.innerHTML = btn_txt
+    btn1.onclick = function () {
+        elem_dialog.close();
+        btn_fnc()
+    }
+
+    open_dialog("info-dialog")
+}
+
     // leere Funktion, wird verwendet, um einen Knopf des confirm_dialog Dialogs (z.B. Abbrechen) lediglich den Dialog schließen zu lassen
 function do_nothing() {}
 
@@ -145,31 +164,44 @@ function toggleTableVisibility(tableId) {
 
 // --- Funktionen Start ---
 
+    // gibt ein neues Objekt mit dem gleichen Inhalt wie das eingegebene Objekt zurück
+function copy(obj) {
+    return JSON.parse(JSON.stringify(obj))
+}
+
     // überprüft, ob eine Variable ein Objekt ist
 function isObject(x) {
     return (typeof x === "object" && !Array.isArray(x) && x !== null)
 
 }
 
+    // gibt das übergebene Objekt in sortierter Form zurück
+function sortObject(obj) {
+    return Object.keys(obj).sort().reduce(function (result, key) {
+        result[key] = obj[key];
+        return result;
+    }, {});
+}
+
     // repariert das eingegebene Daten-Objekt
-function repairData(data) { // data: object = TTB-Data
-    let output = {}
+function repairData(dataIn) { // dataIn: object = TTB-Data
+    let dataOut = {}
 
     // members
-    output["members"] = {}
+    dataOut["members"] = {}
     let member_groups = []
-    if (data.hasOwnProperty("members")) {
-        for (let member in data["members"]) {
+    if (dataIn.hasOwnProperty("members")) {
+        for (let member in dataIn["members"]) {
             if (typeof member === "string") {
-                output["members"][member] = {"groups": []}
+                dataOut["members"][member] = copy(dataEmptyMember)
                 // property: groups
-                if (isObject(data["members"][member]) && data["members"][member].hasOwnProperty("groups")) {
-                    for (let group in data["members"][member]["groups"]) {
-                        let groupName = data["members"][member]["groups"][group]
+                if (isObject(dataIn["members"][member]) && dataIn["members"][member].hasOwnProperty("groups")) {
+                    for (let group in dataIn["members"][member]["groups"]) {
+                        let groupName = dataIn["members"][member]["groups"][group]
                         if (typeof groupName === "string") {
-                            output["members"][member]["groups"].push(data["members"][member]["groups"][group])
-                            if (!member_groups.includes(data["members"][member]["groups"][group])) {
-                                member_groups.push(data["members"][member]["groups"][group])
+                            dataOut["members"][member]["groups"].push(dataIn["members"][member]["groups"][group])
+                            if (!member_groups.includes(dataIn["members"][member]["groups"][group])) {
+                                member_groups.push(dataIn["members"][member]["groups"][group])
                             }
                         }
                     }
@@ -179,21 +211,27 @@ function repairData(data) { // data: object = TTB-Data
     }
 
     // groups
-    output["groups"] = {}
-    if (data.hasOwnProperty("groups")) {
-        for (let group in data["groups"]) {
+    dataOut["groups"] = {}
+    if (dataIn.hasOwnProperty("groups")) {
+        for (let group in dataIn["groups"]) {
             if (typeof group === "string") {
-                output["groups"][group] = {}
+                dataOut["groups"][group] = copy(dataEmptyGroup)
             }
         }
     }
     for (let group in member_groups) {
-        if (!output["groups"].hasOwnProperty(member_groups[group])) {
-            output["groups"][member_groups[group]] = {}
+        if (!dataOut["groups"].hasOwnProperty(member_groups[group])) {
+            dataOut["groups"][member_groups[group]] = {}
         }
     }
 
-    return output;
+    return dataOut;
+}
+
+    // speichert die eingegebenen TTB-Daten in der Variable data und im localstorage
+function saveData(dataIn) {
+    data = repairData(dataIn)
+    localStorage.setItem("data", JSON.stringify(dataIn))
 }
 
 // --- Funktionen Ende ---
@@ -203,8 +241,8 @@ function repairData(data) { // data: object = TTB-Data
     // legt für jedes Mitglied aus den Daten eine Reihe in der Tabelle an
 function verwaltungUpdateTableMitglieder() {
     let table = document.getElementById("VerwaltungTabelleMitglieder");
-    let content = `<tr><th>Mitglieder <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleMitglieder')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
-    for (let member in data["members"]) {
+    let content = `<tr><th>Mitglieder <span class="spacer"></span> <button onclick="verwaltungDialogMitgliedErstellen()"><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleMitglieder')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
+    for (let member in sortObject(data["members"])) {
         content += `<tr><td onclick="verwaltungDialogMitgliedBearbeiten('${member}')">${member}</td></tr>`;
     }
     table.innerHTML = content;
@@ -214,15 +252,132 @@ function verwaltungUpdateTableMitglieder() {
 function verwaltungUpdateTableGruppen() {
     let table = document.getElementById("VerwaltungTabelleGruppen");
     let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
-    for (let group in data["groups"]) {
+    for (let group in sortObject(data["groups"])) {
         content += `<tr><td onclick="verwaltungDialogGruppeBearbeiten('${group}')">${group}</td></tr>`;
     }
     table.innerHTML = content;
 }
 
     // Öffnet den Dialog zum Bearbeiten eines Mitglieds
-function verwaltungDialogMitgliedBearbeiten(name) {
+function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: String = memberName, erstellen: boolean
+    let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
+    let title = document.getElementById("VerwaltungDialogMitgliedBearbeitenTitel")
+    if (!erstellen) {
+        title.innerText = "Mitglied bearbeiten"
+    } else {
+        title.innerText = "Mitglied erstellen"
+    }
+
+    // input-Felder
+    let inputName = document.getElementById("VerwaltungDialogMitgliedBearbeitenName")
+    inputName.value = name
+    let inputGroups = document.getElementById("VerwaltungDialogMitgliedBearbeitenGruppen")
+    let inputGroupsContent = ""
+    let groupKeys = Object.keys(data["groups"])
+    let checkedTranslate = {true: ' checked = "true"', false: ''}
+    for (let i in groupKeys) {
+        if (!erstellen) {
+            let groupMember = data["members"][name]["groups"].includes(groupKeys[i])
+            inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}"${checkedTranslate[groupMember]}>${groupKeys[i]}</label>`
+        } else {
+            inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}">${groupKeys[i]}</label>`
+        }
+    }
+    inputGroups.innerHTML = inputGroupsContent
+
+    // Buttons
+    let saveButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenSpeichern")
+    let cancelEditButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenAbbrechen")
+    let cancelCreateButton = document.getElementById("VerwaltungDialogMitgliedErstellenAbbrechen")
+    let deleteButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenLöschen")
+    saveButton.onclick = function(){verwaltungDialogMitgliedBearbeitenSpeichern(name)}
+    cancelEditButton.onclick = function(){dialog.close()}
+    deleteButton.onclick = function () {confirm_dialog("Bist du sicher, dass du dieses Mitglied löschen möchtest?", "Du bist kurz davor, dieses Mitglied zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", do_nothing, "Fortfahren", function (){verwaltungDialogMitgliedBearbeitenLoeschen(name);dialog.close()})}
+    if (erstellen) {
+        saveButton.onclick = function () {
+            data["members"][name] = copy(dataEmptyMember)
+            saveData(data)
+            page("Verwaltung")
+            verwaltungDialogMitgliedBearbeitenSpeichern(name)
+        }
+    }
+
     open_dialog("VerwaltungDialogMitgliedBearbeiten")
+}
+
+    // speichert die Änderungen am Mitglied (wenn korrekt)
+function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
+    let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
+    let inputName = document.getElementById("VerwaltungDialogMitgliedBearbeitenName").value
+    let oldMember = data["members"][name]
+    let newMember = copy(dataEmptyMember)
+
+    // name
+    if (name !== inputName) { // Name wurde geändert
+        if (data["members"].hasOwnProperty(inputName)) { // Name bereits vergeben
+            info_dialog("Dieser Name ist bereits vergeben.", "Ein Mitglied mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen.", "Fortfahren", do_nothing)
+            return
+        } else {
+            delete data["members"][name]
+        }
+    }
+
+    // groups
+    let groupKeys = Object.keys(data["groups"])
+    for (let i in groupKeys) {
+        let checkbox = document.getElementById(`VerwaltungDialogMitgliedBearbeitenGruppen_${i}`)
+        if(checkbox.checked) {
+            newMember["groups"].push(groupKeys[i])
+        }
+    }
+
+    // save
+    data["members"][inputName] = newMember
+    saveData(data)
+
+    verwaltungUpdateTableMitglieder()
+    dialog.close()
+    if (verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMember)) { // Änderungen wurden vorgenommen
+        info_dialog("Änderungen gespeichert", "Deine Änderungen wurden übernommen. Du kannst dieses Fenster nun schließen.", "Fortfahren", do_nothing)
+    }
+}
+
+    // überprüft ob Änderungen an den Daten im Dialog vom Mitglied vorgenommen wurden
+function verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMember) {
+    let changed = false
+
+    // name
+    let inputName = document.getElementById("VerwaltungDialogMitgliedBearbeitenName").value
+    if (inputName !== name) {
+        changed = true
+    }
+
+    // groups
+    if (newMember["groups"].sort().join(", ") !== oldMember["groups"].sort().join(", ")) {
+        changed = true
+    }
+
+    return changed
+}
+
+    // löscht ein Mitglied
+function verwaltungDialogMitgliedBearbeitenLoeschen(name) {
+    delete data["members"][name]
+    saveData(data)
+    page("Verwaltung")
+    info_dialog("Mitglied gelöscht", "Das Mitglied wurde erfolgreich gelöscht. Du kannst dieses Fenster nun schließen.", "Fortfahren", do_nothing)
+}
+
+function verwaltungDialogMitgliedErstellen() {
+    let name = "Neues Mitglied"
+    while (data["members"].hasOwnProperty(name)) {
+        if (name.endsWith(")")) {
+            name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
+        } else {
+            name += " (1)"
+        }
+    }
+    verwaltungDialogMitgliedBearbeiten(name, true)
 }
 
     // Öffnet den Dialog zum Bearbeiten einer Gruppe
@@ -239,8 +394,7 @@ function einstellungenImportJsonData() {
     let file_to_read = document.getElementById("Einstellungen_input_import_data").files[0];
     let file_read = new FileReader();
     file_read.onload = function (e) {
-        data = repairData(JSON.parse(e.target.result.toString()))
-        localStorage.setItem("data", JSON.stringify(data))
+        saveData(JSON.parse(e.target.result.toString()))
         page('Verwaltung')
     };
     file_read.readAsText(file_to_read);
@@ -248,8 +402,7 @@ function einstellungenImportJsonData() {
 
     // überschreibt die gespeicherten Daten mit Beispiel-Daten
 function einstellungenResetData() {
-    data = repairData({"members": {"Mitglied 1": {"groups": ["Gruppe 1"]}}, "groups": ["Gruppe 1"]})
-    localStorage.setItem("data", JSON.stringify(data))
+    saveData(dataExample)
     page('Verwaltung')
 }
 
