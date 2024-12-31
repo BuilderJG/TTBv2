@@ -288,7 +288,6 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
     // Buttons
     let saveButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenSpeichern")
     let cancelEditButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenAbbrechen")
-    let cancelCreateButton = document.getElementById("VerwaltungDialogMitgliedErstellenAbbrechen")
     let deleteButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenLöschen")
     saveButton.onclick = function(){verwaltungDialogMitgliedBearbeitenSpeichern(name)}
     cancelEditButton.onclick = function(){dialog.close()}
