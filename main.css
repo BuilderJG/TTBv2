@@ -241,10 +241,6 @@ dialog .dialog-content {
     width: 100%;
 }
 
-dialog.full-screen-dialog .dialog-content {
-    min-height: 75vh;
-}
-
 .dialog-close-button {
     font-size: x-large;
     position: absolute;
