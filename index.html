@@ -44,11 +44,11 @@
     <div class="page" id="Einstellungen">
         <h2>Einstellungen</h2>
         <input type="file" id="Einstellungen_input_import_data" accept=".json">
-        <button class="dangerous_button" onclick='if (!document.getElementById("Einstellungen_input_import_data").files[0]) {info_dialog("Keine Datei ausgewählt.", "Du hast keine Datei, die importiert werden soll, ausgewählt.", "Fortfahren", do_nothing)} else {confirm_dialog("Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?", "Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!", "Abbrechen", do_nothing, "Fortfahren", einstellungenImportJsonData)}'>Daten importieren</button>
+        <button class="dangerous_button" onclick='if (!document.getElementById("Einstellungen_input_import_data").files[0]) {infoDialog("Keine Datei ausgewählt.", "Du hast keine Datei, die importiert werden soll, ausgewählt.", "Fortfahren", doNothing)} else {confirmDialog("Bist du sicher, dass du alle bestehenden Daten überschreiben möchtest?", "Beim Importieren werden alle bestehenden Daten überschrieben. Diese Aktion kann nicht rückgängig gemacht werden!", "Abbrechen", doNothing, "Fortfahren", einstellungenImportJsonData)}'>Daten importieren</button>
         <br>
         <button onclick="download(JSON.stringify(data), 'data.json', 'text/plain')">Daten exportieren</button>
         <hr>
-        <button class="dangerous_button" onclick="confirm_dialog('Bist du sicher, dass du alle bestehenden Daten löschen möchtest?', 'Du bist kurz davor, alle Daten zu löschen. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', do_nothing, 'Fortfahren', einstellungenResetData)">alle Daten löschen</button>
+        <button class="dangerous_button" onclick="confirmDialog('Bist du sicher, dass du alle bestehenden Daten löschen möchtest?', 'Du bist kurz davor, alle Daten zu löschen. Diese Aktion kann nicht rückgängig gemacht werden!', 'Abbrechen', doNothing, 'Fortfahren', einstellungenResetData)">alle Daten löschen</button>
     </div>
     <dialog id="confirm-dialog">
         <h2 id="confirm-dialog-title"></h2>

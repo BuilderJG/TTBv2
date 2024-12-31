@@ -60,12 +60,12 @@ function navPage(selectedPage) {
 }
 
     // erlaubt das Scrollen nur, wenn kein Dialog-Element geöffnet ist
-let open_dialogs = 0
+let openDialogs = 0
 let dialogElements = Array.from(document.getElementsByTagName("dialog"))
 for (let i in dialogElements) {
     dialogElements[i].addEventListener("close", () => {
-        open_dialogs -= 1
-        if (open_dialogs === 0) {
+        openDialogs -= 1
+        if (openDialogs === 0) {
             document.getElementsByTagName("body")[0].style.overflowY = "auto"
         }
     })
@@ -85,16 +85,16 @@ for (let i in dialogContentDivs) {
 
 
     // öffnet das Dialog-Element mit der angegebenen ID
-function open_dialog(dialogId) { //dialogId: string = HTML-ID
-    open_dialogs += 1
-    if (open_dialogs === 1) {
+function openDialog(dialogId) { //dialogId: string = HTML-ID
+    openDialogs += 1
+    if (openDialogs === 1) {
         document.getElementsByTagName("body")[0].style.overflowY = "hidden"
     }
     document.getElementById(dialogId).showModal()
 }
 
     // Funktion, um einen simplen Dialog mit zwei Auswahlmöglichkeiten zu erstellen
-function confirm_dialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
+function confirmDialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
     let elem_dialog = document.getElementById("confirm-dialog")
     document.getElementById("confirm-dialog-title").innerHTML = title
     document.getElementById("confirm-dialog-description").innerHTML = desc
@@ -111,11 +111,11 @@ function confirm_dialog(title, desc, btn1_txt, btn1_fnc, btn2_txt, btn2_fnc) {
         btn2_fnc()
     }
 
-    open_dialog("confirm-dialog")
+    openDialog("confirm-dialog")
 }
 
-// Funktion, um einen simplen Dialog mit einer Auswahlmöglichkeit zu erstellen
-function info_dialog(title, desc, btn_txt, btn_fnc) {
+    // Funktion, um einen simplen Dialog mit einer Auswahlmöglichkeit zu erstellen
+function infoDialog(title, desc, btn_txt, btn_fnc) {
     let elem_dialog = document.getElementById("info-dialog")
     document.getElementById("info-dialog-title").innerHTML = title
     document.getElementById("info-dialog-description").innerHTML = desc
@@ -126,11 +126,11 @@ function info_dialog(title, desc, btn_txt, btn_fnc) {
         btn_fnc()
     }
 
-    open_dialog("info-dialog")
+    openDialog("info-dialog")
 }
 
     // leere Funktion, wird verwendet, um einen Knopf des confirm_dialog Dialogs (z.B. Abbrechen) lediglich den Dialog schließen zu lassen
-function do_nothing() {}
+function doNothing() {}
 
     // erstellt eine Datei mit den angegebenen Eigenschaften und lädt diese automatisch herunter
 function download(data, filename, type) {
@@ -291,7 +291,7 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
     let deleteButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenLöschen")
     saveButton.onclick = function(){verwaltungDialogMitgliedBearbeitenSpeichern(name)}
     cancelEditButton.onclick = function(){dialog.close()}
-    deleteButton.onclick = function () {confirm_dialog("Bist du sicher, dass du dieses Mitglied löschen möchtest?", "Du bist kurz davor, dieses Mitglied zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", do_nothing, "Fortfahren", function (){verwaltungDialogMitgliedBearbeitenLoeschen(name);dialog.close()})}
+    deleteButton.onclick = function () {confirmDialog("Bist du sicher, dass du dieses Mitglied löschen möchtest?", "Du bist kurz davor, dieses Mitglied zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function (){verwaltungDialogMitgliedBearbeitenLoeschen(name);dialog.close()})}
     if (erstellen) {
         saveButton.onclick = function () {
             data["members"][name] = copy(dataEmptyMember)
@@ -301,7 +301,7 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
         }
     }
 
-    open_dialog("VerwaltungDialogMitgliedBearbeiten")
+    openDialog("VerwaltungDialogMitgliedBearbeiten")
 }
 
     // speichert die Änderungen am Mitglied (wenn korrekt)
@@ -314,7 +314,7 @@ function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
     // name
     if (name !== inputName) { // Name wurde geändert
         if (data["members"].hasOwnProperty(inputName)) { // Name bereits vergeben
-            info_dialog("Dieser Name ist bereits vergeben.", "Ein Mitglied mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen.", "Fortfahren", do_nothing)
+            infoDialog("Dieser Name ist bereits vergeben.", "Ein Mitglied mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen.", "Fortfahren", doNothing)
             return
         } else {
             delete data["members"][name]
@@ -337,7 +337,7 @@ function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
     verwaltungUpdateTableMitglieder()
     dialog.close()
     if (verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMember)) { // Änderungen wurden vorgenommen
-        info_dialog("Änderungen gespeichert", "Deine Änderungen wurden übernommen. Du kannst dieses Fenster nun schließen.", "Fortfahren", do_nothing)
+        infoDialog("Änderungen gespeichert", "Deine Änderungen wurden übernommen. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
     }
 }
 
@@ -364,7 +364,7 @@ function verwaltungDialogMitgliedBearbeitenLoeschen(name) {
     delete data["members"][name]
     saveData(data)
     page("Verwaltung")
-    info_dialog("Mitglied gelöscht", "Das Mitglied wurde erfolgreich gelöscht. Du kannst dieses Fenster nun schließen.", "Fortfahren", do_nothing)
+    infoDialog("Mitglied gelöscht", "Das Mitglied wurde erfolgreich gelöscht. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
 }
 
 function verwaltungDialogMitgliedErstellen() {
@@ -381,7 +381,7 @@ function verwaltungDialogMitgliedErstellen() {
 
     // Öffnet den Dialog zum Bearbeiten einer Gruppe
 function verwaltungDialogGruppeBearbeiten(name) {
-    open_dialog("VerwaltungDialogMitgliedBearbeiten")
+    openDialog("VerwaltungDialogMitgliedBearbeiten")
 }
 
 // --- Verwaltung Ende ---
