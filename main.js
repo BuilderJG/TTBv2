@@ -248,16 +248,6 @@ function verwaltungUpdateTableMitglieder() {
     table.innerHTML = content;
 }
 
-    // legt für jede Gruppe aus den Daten eine Reihe in der Tabelle an
-function verwaltungUpdateTableGruppen() {
-    let table = document.getElementById("VerwaltungTabelleGruppen");
-    let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
-    for (let group in sortObject(data["groups"])) {
-        content += `<tr><td onclick="verwaltungDialogGruppeBearbeiten('${group}')">${group}</td></tr>`;
-    }
-    table.innerHTML = content;
-}
-
     // Öffnet den Dialog zum Bearbeiten eines Mitglieds
 function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: String = memberName, erstellen: boolean
     let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
