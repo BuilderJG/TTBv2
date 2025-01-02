@@ -265,7 +265,7 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
     let inputGroupsContent = ""
     let groupKeys = Object.keys(data["groups"])
     let checkedTranslate = {true: ' checked = "true"', false: ''}
-    for (let i in groupKeys) {
+    for (let i in groupKeys.sort()) {
         if (!erstellen) {
             let groupMember = data["members"][name]["groups"].includes(groupKeys[i])
             inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}"${checkedTranslate[groupMember]}>${groupKeys[i]}</label>`
@@ -280,13 +280,13 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
     let cancelEditButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenAbbrechen")
     let deleteButton = document.getElementById("VerwaltungDialogMitgliedBearbeitenLöschen")
     saveButton.onclick = function(){verwaltungDialogMitgliedBearbeitenSpeichern(name)}
-    cancelEditButton.onclick = function(){dialog.close()}
-    deleteButton.onclick = function () {confirmDialog("Bist du sicher, dass du dieses Mitglied löschen möchtest?", "Du bist kurz davor, dieses Mitglied zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function (){verwaltungDialogMitgliedBearbeitenLoeschen(name);dialog.close()})}
+    cancelEditButton.onclick = function(){verwaltungDialogMitgliedBearbeitenAbbrechen(name)}
+    deleteButton.onclick = function () {confirmDialog("Bist du sicher, dass du dieses Mitglied löschen möchtest?", "Du bist kurz davor, dieses Mitglied zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function (){verwaltungDialogMitgliedBearbeitenLoeschen(name)})}
     if (erstellen) {
         saveButton.onclick = function () {
             data["members"][name] = copy(dataEmptyMember)
             saveData(data)
-            page("Verwaltung")
+            verwaltungUpdateTableMitglieder()
             verwaltungDialogMitgliedBearbeitenSpeichern(name)
         }
     }
@@ -313,7 +313,7 @@ function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
 
     // groups
     let groupKeys = Object.keys(data["groups"])
-    for (let i in groupKeys) {
+    for (let i in groupKeys.sort()) {
         let checkbox = document.getElementById(`VerwaltungDialogMitgliedBearbeitenGruppen_${i}`)
         if(checkbox.checked) {
             newMember["groups"].push(groupKeys[i])
@@ -328,6 +328,28 @@ function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
     dialog.close()
     if (verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMember)) { // Änderungen wurden vorgenommen
         infoDialog("Änderungen gespeichert", "Deine Änderungen wurden übernommen. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
+    }
+}
+
+// führt den Prozess zum Abbrechen der Bearbeitung eines Mitglieds aus
+function verwaltungDialogMitgliedBearbeitenAbbrechen(name) {
+    let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
+    let oldMember = data["members"][name]
+    let newMember = copy(dataEmptyMember)
+
+    // groups
+    let groupKeys = Object.keys(data["groups"])
+    for (let i in groupKeys.sort()) {
+        let checkbox = document.getElementById(`VerwaltungDialogMitgliedBearbeitenGruppen_${i}`)
+        if(checkbox.checked) {
+            newMember["groups"].push(groupKeys[i])
+        }
+    }
+
+    if (verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMember)) {
+        confirmDialog("Bist du sicher, dass du deine Änderungen verwerfen möchtest?", "Du bist kurz davor, alle deine Änderungen an diesem Mitglied zu verwerfen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function () {dialog.close()})
+    } else {
+        dialog.close()
     }
 }
 
@@ -353,14 +375,17 @@ function verwaltungDialogMitgliedBearbeitenHatAenderung(name, oldMember, newMemb
 function verwaltungDialogMitgliedBearbeitenLoeschen(name) {
     delete data["members"][name]
     saveData(data)
-    page("Verwaltung")
+    let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
+    verwaltungUpdateTableMitglieder()
+    dialog.close()
     infoDialog("Mitglied gelöscht", "Das Mitglied wurde erfolgreich gelöscht. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
 }
 
+    // ermöglicht das Erstellen eines Mitglieds
 function verwaltungDialogMitgliedErstellen() {
     let name = "Neues Mitglied"
     while (data["members"].hasOwnProperty(name)) {
-        if (name.endsWith(")")) {
+        if (name.endsWith(")") && name.substring(0, name.length-2).endsWith("(")) {
             name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
         } else {
             name += " (1)"
@@ -369,11 +394,10 @@ function verwaltungDialogMitgliedErstellen() {
     verwaltungDialogMitgliedBearbeiten(name, true)
 }
 
-
     // legt für jede Gruppe aus den Daten eine Reihe in der Tabelle an
 function verwaltungUpdateTableGruppen() {
     let table = document.getElementById("VerwaltungTabelleGruppen");
-    let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
+    let content = `<tr><th>Gruppen <span class="spacer"></span> <button onclick="verwaltungDialogGruppeErstellen()"><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let group in sortObject(data["groups"])) {
         content += `<tr><td onclick="verwaltungDialogGruppeBearbeiten('${group}')">${group}</td></tr>`;
     }
@@ -381,8 +405,131 @@ function verwaltungUpdateTableGruppen() {
 }
 
     // öffnet den Dialog zum Bearbeiten einer Gruppe
-function verwaltungDialogGruppeBearbeiten(name) {
-    openDialog("VerwaltungDialogMitgliedBearbeiten")
+function verwaltungDialogGruppeBearbeiten(name, erstellen = false) {
+    let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
+    let title = document.getElementById("VerwaltungDialogGruppeBearbeitenTitel")
+    if (!erstellen) {
+        title.innerText = "Gruppe bearbeiten"
+    } else {
+        title.innerText = "Gruppe erstellen"
+    }
+
+    // name
+    let inputName = document.getElementById("VerwaltungDialogGruppeBearbeitenName")
+    inputName.value = name
+
+    // buttons
+    let saveButton = document.getElementById("VerwaltungDialogGruppeBearbeitenSpeichern")
+    let cancelEditButton = document.getElementById("VerwaltungDialogGruppeBearbeitenAbbrechen")
+    let deleteButton = document.getElementById("VerwaltungDialogGruppeBearbeitenLöschen")
+    saveButton.onclick = function(){verwaltungDialogGruppeBearbeitenSpeichern(name)}
+    cancelEditButton.onclick = function(){verwaltungDialogGruppeBearbeitenAbbrechen(name)}
+    deleteButton.onclick = function () {confirmDialog("Bist du sicher, dass du diese Gruppe löschen möchtest?", "Du bist kurz davor, diese Gruppe zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function (){verwaltungDialogGruppeBearbeitenLoeschen(name)})}
+    if (erstellen) {
+        saveButton.onclick = function () {
+            data["groups"][name] = copy(dataEmptyGroup)
+            saveData(data)
+            verwaltungUpdateTableMitglieder()
+            verwaltungDialogGruppeBearbeitenSpeichern(name)
+        }
+    }
+
+    openDialog("VerwaltungDialogGruppeBearbeiten")
+}
+
+    // speichert die Änderungen an der Gruppe (wenn korrekt)
+function verwaltungDialogGruppeBearbeitenSpeichern(name) {
+    let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
+    let inputName = document.getElementById("VerwaltungDialogGruppeBearbeitenName").value
+    let oldGroup = data["groups"][name]
+    let newGroup = copy(dataEmptyGroup)
+
+    // name
+    if (name !== inputName) { // Name wurde geändert
+        if (data["groups"].hasOwnProperty(inputName)) { // Name bereits vergeben
+            infoDialog("Dieser Name ist bereits vergeben.", "Eine Gruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen.", "Fortfahren", doNothing)
+            return
+        } else {
+            delete data["groups"][name]
+        }
+    }
+
+    // save
+    data["groups"][inputName] = newGroup
+    for (let member in data["members"]) {
+        if (data["members"][member]["groups"].includes(name)) { // Mitglied in alter Gruppe
+            let index = data["members"][member]["groups"].indexOf(name);
+            if (index >= 0) {
+                data["members"][member]["groups"].splice(index, 1); // entfernt alte Gruppe
+            }
+            data["members"][member]["groups"].push(inputName) // fügt neue Gruppe hinzu
+        }
+    }
+    saveData(data)
+
+    verwaltungUpdateTableGruppen()
+    dialog.close()
+    if (verwaltungDialogGruppeBearbeitenHatAenderung(name, oldGroup, newGroup)) { // Änderungen wurden vorgenommen
+        infoDialog("Änderungen gespeichert", "Deine Änderungen wurden übernommen. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
+    }
+}
+
+    // führt den Prozess zum Abbrechen der Bearbeitung einer Gruppe aus
+function verwaltungDialogGruppeBearbeitenAbbrechen(name) {
+    let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
+    let oldGroup = data["groups"][name]
+    let newGroup = copy(dataEmptyGroup)
+
+    if (verwaltungDialogGruppeBearbeitenHatAenderung(name, oldGroup, newGroup)) {
+        confirmDialog("Bist du sicher, dass du deine Änderungen verwerfen möchtest?", "Du bist kurz davor, alle deine Änderungen an dieser Gruppe zu verwerfen. Diese Aktion kann nicht rückgängig gemacht werden.", "Abbrechen", doNothing, "Fortfahren", function () {dialog.close()})
+    } else {
+        dialog.close()
+    }
+}
+
+    // überprüft ob Änderungen an den Daten im Dialog vom Mitglied vorgenommen wurden
+function verwaltungDialogGruppeBearbeitenHatAenderung(name, oldGroup, newGroup) {
+    let changed = false
+
+    // name
+    let inputName = document.getElementById("VerwaltungDialogGruppeBearbeitenName").value
+    if (inputName !== name) {
+        changed = true
+    }
+
+    return changed
+}
+
+    // löscht eine Gruppe
+function verwaltungDialogGruppeBearbeitenLoeschen(name) {
+    delete data["groups"][name]
+    for (let member in data["members"]) {
+        if (data["members"][member]["groups"].includes(name)) { // Mitglied in alter Gruppe
+            let index = data["members"][member]["groups"].indexOf(name);
+            if (index >= 0) {
+                data["members"][member]["groups"].splice(index, 1); // entfernt alte Gruppe
+            }
+        }
+    }
+    saveData(data)
+
+    let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
+    verwaltungUpdateTableGruppen()
+    dialog.close()
+    infoDialog("Gruppe gelöscht", "Die Gruppe wurde erfolgreich gelöscht. Du kannst dieses Fenster nun schließen.", "Fortfahren", doNothing)
+}
+
+    // ermöglicht das Erstellen einer Gruppe
+function verwaltungDialogGruppeErstellen() {
+    let name = "Neue Gruppe"
+    while (data["groups"].hasOwnProperty(name)) {
+        if (name.endsWith(")") && name.substring(0, name.length-2).endsWith("(")) {
+            name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
+        } else {
+            name += " (1)"
+        }
+    }
+    verwaltungDialogGruppeBearbeiten(name, true)
 }
 
 // --- Verwaltung Ende ---
