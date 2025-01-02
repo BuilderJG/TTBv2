@@ -379,7 +379,18 @@ function verwaltungDialogMitgliedErstellen() {
     verwaltungDialogMitgliedBearbeiten(name, true)
 }
 
-    // Öffnet den Dialog zum Bearbeiten einer Gruppe
+
+    // legt für jede Gruppe aus den Daten eine Reihe in der Tabelle an
+function verwaltungUpdateTableGruppen() {
+    let table = document.getElementById("VerwaltungTabelleGruppen");
+    let content = `<tr><th>Gruppen <span class="spacer"></span> <button><span class="material-symbols-outlined">add</span></button> <button onclick="toggleTableVisibility('VerwaltungTabelleGruppen')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
+    for (let group in sortObject(data["groups"])) {
+        content += `<tr><td onclick="verwaltungDialogGruppeBearbeiten('${group}')">${group}</td></tr>`;
+    }
+    table.innerHTML = content;
+}
+
+    // öffnet den Dialog zum Bearbeiten einer Gruppe
 function verwaltungDialogGruppeBearbeiten(name) {
     openDialog("VerwaltungDialogMitgliedBearbeiten")
 }
