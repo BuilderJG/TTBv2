@@ -192,6 +192,7 @@ dialog {
     padding: 0;
     border: 1px solid black;
 }
+
 dialog h2 {
     text-align: center;
 }
@@ -210,6 +211,10 @@ dialog.full-screen-dialog {
 .dialog-content {
     display: flex;
     flex-direction: column;
+}
+
+.full-screen-dialog .dialog-content {
+    min-height: 75vh;
 }
 
 .dialog-content div {
