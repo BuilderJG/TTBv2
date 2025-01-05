@@ -177,7 +177,7 @@ th .spacer {
     flex-grow: 1;
 }
 
-th button {
+tr button {
     margin: 0 0 0 5px;
     width: 1.5lh;
     height: 1.5lh;
@@ -288,4 +288,45 @@ dialog .dialog-content {
 
 #confirm-dialog-btn2:hover {
     background: none;
+}
+
+.datepicker {
+    transition: 0.3s;
+    margin-bottom: 100px;
+}
+
+#AnwesenheitInputDatum {
+    border: none;
+    font-size: medium;
+    cursor: pointer;
+    caret-color: transparent;
+    text-decoration: underline;
+    margin: 0 0 20px;
+}
+
+#AnwesenheitInputDatum:focus {
+    outline: none;
+}
+
+#Anwesenheit hr {
+    margin-bottom: 50px;
+}
+
+.floatingBottomButtons {
+    box-sizing: border-box;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.8);
+}
+
+.floatingBottomButtons button {
+    margin: 0 10px 0 0;
+}
+
+.anwesenheitGroupWithEdits {
+    text-decoration: underline;
 }

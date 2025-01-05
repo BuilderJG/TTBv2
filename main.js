@@ -12,8 +12,8 @@ if (localStorage.getItem("data")) {
 }
 saveData(data)
 
-    // Öffnet die erste verfügbare Seite
-page(document.getElementsByClassName("page")[0].id)
+    // speichert, welche Mitglieder für die Anwesenheit ausgewählt wurden
+let anwesenheitSelectedMembers = []
 
 // --- Setup Ende ---
 
@@ -38,7 +38,7 @@ function toggleNav() {
     // Zeigt die ausgewählte Seite an
 function page(selectedPage) { // selectedPage: String = htmlId
     let pages = Array.from(document.getElementsByClassName("page"));
-    let pageFunctions = {"Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
+    let pageFunctions = {"Anwesenheit": [anwesenheitUpdateDatumAuswahl, anwesenheitUpdateTableGruppenAuswahl], "Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
             pages[i].style.display = "block"
@@ -53,7 +53,7 @@ function page(selectedPage) { // selectedPage: String = htmlId
     }
 }
 
-// ausschließlich zur Verwendung in der Navigationsleiste; schließt die Nav-Leiste und öffnet die angegebene Seite
+    // ausschließlich zur Verwendung in der Navigationsleiste; schließt die Nav-Leiste und öffnet die angegebene Seite
 function navPage(selectedPage) {
     page(selectedPage)
     toggleNav()
@@ -135,6 +135,7 @@ function doNothing() {}
     // erstellt eine Datei mit den angegebenen Eigenschaften und lädt diese automatisch herunter
 function download(data, filename, type) {
     let file = new Blob([data], {type: type});
+    // noinspection JSUnresolvedReference
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
     else { // Others
@@ -151,12 +152,22 @@ function download(data, filename, type) {
     }
 }
 
+    // versteckt bzw. zeigt die angegebene Tabelle
 function toggleTableVisibility(tableId) {
     let table = document.getElementById(tableId)
     if (table.classList.contains("hidden")) {
         table.classList.remove("hidden")
     } else {
         table.classList.add("hidden")
+    }
+}
+
+    // wechselt den Zustand des angegeben Checkmarks
+function toggleCheckmark(checkmarkId) {
+    let checkmark = document.getElementById(checkmarkId)
+    checkmark.checked = !checkmark.checked;
+    if(checkmarkId.startsWith("AnwesenheitTabelleAuswahl_")) {
+        anwesenheitTableGruppenAuswahlCheckmarkUpdate(parseInt(checkmarkId.substring("AnwesenheitTabelleAuswahl_".length)))
     }
 }
 
@@ -234,7 +245,190 @@ function saveData(dataIn) {
     localStorage.setItem("data", JSON.stringify(dataIn))
 }
 
+    // für Funktionen, die einen neuen Eintrag erstellen, um Duplikaten vorzubeugen
+function createNewName(name) {
+    if (name.endsWith(")") && name.substring(0, name.length-2).endsWith("(")) {
+        name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
+    } else {
+        name += " (1)"
+    }
+    return name
+}
+
+    // setzt das Zeichen 0 vor, bis die Wunschlänge erreicht ist
+function pad(inString, length) {
+    inString = inString.toString();
+    while (inString.length < length) inString = "0" + inString;
+    return inString;
+}
+
 // --- Funktionen Ende ---
+
+// --- Anwesenheit Start ---
+
+    // bereitet das Eingabefeld für das Datum vor
+function anwesenheitUpdateDatumAuswahl() {
+    let date = new Date()
+    let dateInput = document.getElementById("AnwesenheitInputDatum")
+    let datepicker = new Datepicker(dateInput, {"language": "de", "format": "dd-mm-yyyy", "autohide": true})
+    datepicker.setDate(date)
+}
+
+    // aktualisiert die Tabelle bzw. erstellt diese
+function anwesenheitUpdateTableGruppenAuswahl(recreate = true) {
+    let table = document.getElementById("AnwesenheitTabelleGruppenAuswahl")
+    let groupKeys = ["alle"].concat(Object.keys(data["groups"]).sort())
+    let groupMembers = {}
+    if (recreate) {
+        let content = `<tr><th>beteiligte Gruppen <span class="spacer"></span> <button onclick="toggleTableVisibility('AnwesenheitTabelleGruppenAuswahl')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
+        for (let i in groupKeys) {
+            content += `<tr onclick="toggleCheckmark('AnwesenheitTabelleAuswahl_${i}')"><td><label onclick="event.stopImmediatePropagation()" for="AnwesenheitTabelleAuswahl_${i}"><div id="AnwesenheitTabelleAuswahl_${i}_p"><input onchange="anwesenheitTableGruppenAuswahlCheckmarkUpdate(${i})" type="checkbox" id="AnwesenheitTabelleAuswahl_${i}"> ${groupKeys[i]}</div></label> <span class="spacer"></span> <button onclick="event.stopImmediatePropagation();anwesenheitDialogMitgliederAuswahl(${i})"><span class="material-symbols-outlined">more_horiz</span></button></td></tr>`;
+        }
+        table.innerHTML = content;
+    }
+
+    for (let group in data["groups"]) {
+        groupMembers[group] = {"total": 0, "selected": 0}
+    }
+
+    if (anwesenheitSelectedMembers.sort() === Object.keys(data["members"]).sort()) { // alle Mitglieder ausgewählt
+        for (let i in groupKeys) {
+            document.getElementById(`AnwesenheitTabelleAuswahl_${i}`).checked = true
+        }
+    } else {
+        for (let member in data["members"]) {
+            for (let i in data["members"][member]["groups"]) {
+                groupMembers[data["members"][member]["groups"][i]]["total"] += 1
+                if (anwesenheitSelectedMembers.includes(member)) {
+                    groupMembers[data["members"][member]["groups"][i]]["selected"] += 1
+                }
+            }
+        }
+
+        for (let group in groupMembers) {
+            let index = groupKeys.indexOf(group)
+            if (groupMembers[group]["total"] === groupMembers[group]["selected"] && groupMembers[group]["total"] > 0) { // alle Mitglieder ausgewählt, Gruppe nicht leer
+                document.getElementById(`AnwesenheitTabelleAuswahl_${index}`).checked = true
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_${index}_p`)
+                if (element.classList.contains("anwesenheitGroupWithEdits")) {
+                    element.classList.remove("anwesenheitGroupWithEdits")
+                }
+            } else if (groupMembers[group]["selected"] > 0 && groupMembers[group]["total"] > 0) { // einige Mitglieder ausgewählt, Gruppe nicht leer
+                document.getElementById(`AnwesenheitTabelleAuswahl_${index}`).checked = false
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_${index}_p`)
+                if (!element.classList.contains("anwesenheitGroupWithEdits")) {
+                    element.classList.add("anwesenheitGroupWithEdits")
+                }
+            } else if (groupMembers[group]["selected"] === 0 && groupMembers[group]["total"] > 0) { // keine Mitglieder ausgewählt, Gruppe nicht leer
+                document.getElementById(`AnwesenheitTabelleAuswahl_${index}`).checked = false
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_${index}_p`)
+                if (element.classList.contains("anwesenheitGroupWithEdits")) {
+                    element.classList.remove("anwesenheitGroupWithEdits")
+                }
+            } else if (groupMembers[group]["total"] === 0) { // Gruppe leer
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_${index}`)
+                if (!element.classList.contains("anwesenheitEmptyGroup")) {
+                    element.classList.add("anwesenheitEmptyGroup")
+                }
+            }
+        }
+        if (anwesenheitSelectedMembers.length > 0) { // Mitglieder ausgewählt
+            if (anwesenheitSelectedMembers.length === Object.keys(data["members"]).length) { // alle Mitglieder ausgewählt
+                document.getElementById(`AnwesenheitTabelleAuswahl_0`).checked = true
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_0_p`)
+                if (element.classList.contains("anwesenheitGroupWithEdits")) {
+                    element.classList.remove("anwesenheitGroupWithEdits")
+                }
+            } else { // einige Mitglieder ausgewählt
+                document.getElementById(`AnwesenheitTabelleAuswahl_0`).checked = false
+                let element = document.getElementById(`AnwesenheitTabelleAuswahl_0_p`)
+                if (!element.classList.contains("anwesenheitGroupWithEdits")) {
+                    element.classList.add("anwesenheitGroupWithEdits")
+                }
+            }
+        }
+    }
+}
+
+    // ausgelöst durch Veränderungen an einem Checkmark in der Tabelle
+function anwesenheitTableGruppenAuswahlCheckmarkUpdate(index) {
+    let groupKeys = ["alle"].concat(Object.keys(data["groups"]).sort())
+    let value = document.getElementById(`AnwesenheitTabelleAuswahl_${index}`).checked
+
+    // ausgewählte Gruppe, deren Mitglieder
+    if (index === 0) { // alle
+        if (!value) { // entfernt
+            anwesenheitSelectedMembers = []
+        } else { // hinzugefügt
+            anwesenheitSelectedMembers = Object.keys(data["members"])
+        }
+        for (let i in groupKeys) {
+            document.getElementById(`AnwesenheitTabelleAuswahl_${i}`).checked = value
+            let element = document.getElementById(`AnwesenheitTabelleAuswahl_${i}_p`)
+            if (element.classList.contains("anwesenheitGroupWithEdits")) {
+                element.classList.remove("anwesenheitGroupWithEdits")
+            }
+        }
+    } else {
+        for (let member in data["members"]) {
+            if (data["members"][member]["groups"].includes(groupKeys[index])) {
+                if (value && !anwesenheitSelectedMembers.includes(member)) { // Gruppe hinzugefügt, Mitglied noch nicht ausgewählt
+                    anwesenheitSelectedMembers.push(member)
+                } else if (!value) { // Gruppe entfernt
+                    let position = anwesenheitSelectedMembers.indexOf(member)
+                    anwesenheitSelectedMembers.splice(position, 1)
+                }
+            }
+        }
+
+        anwesenheitUpdateTableGruppenAuswahl(false)
+
+        let allTrue = true
+        for (let i in groupKeys) {
+            let element = document.getElementById(`AnwesenheitTabelleAuswahl_${i}`)
+            if (i > 0 && element.checked === false && !element.classList.contains("anwesenheitEmptyGroup")) {
+                allTrue = false
+            }
+        }
+        document.getElementById(`AnwesenheitTabelleAuswahl_0`).checked = allTrue;
+    }
+}
+
+function anwesenheitDialogMitgliederAuswahl(index) {
+    let groupKeys = ["alle"].concat(Object.keys(data["groups"]).sort())
+    let members = []
+
+    let title = document.getElementById("AnwesenheitDialogMitgliederAuswahlTitel")
+    let table = document.getElementById("AnwesenheitTabelleMitgliederAuswahl")
+    if (index > 0) {
+        title.innerText = `${groupKeys[index]} - Mitglieder auswählen`
+    } else {
+        title.innerText = "Mitglieder auswählen"
+    }
+
+    for (let member in data["members"]) {
+        if (index === 0 || data["members"][member]["groups"].includes(groupKeys[index])) {
+            members.push(member)
+        }
+    }
+    members = members.sort()
+
+    let content = `<tr><th>Mitglieder auswählen <span class="spacer"></span> <button onclick="toggleTableVisibility('AnwesenheitTabelleMitgliederAuswahl')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
+    for (let i in members) {
+        content += `<tr onclick="toggleCheckmark('AnwesenheitTabelleMitgliederAuswahl_${i}')"><td><label onclick="event.stopImmediatePropagation()" for="AnwesenheitTabelleMitgliederAuswahl_${i}"><div id="AnwesenheitTabelleMitgliederAuswahl_${i}_p"><input onchange="anwesenheitTableMitgliederAuswahlCheckmarkUpdate(${i})" type="checkbox" id="AnwesenheitTabelleMitgliederAuswahl_${i}"`
+        if (anwesenheitSelectedMembers.includes(members[i])) {
+            content += " checked"
+        }
+        content += `> ${members[i]}</div></label></td></tr>`
+            }
+    if (members.length === 0) {
+        content += `<tr><td>Diese Gruppe enthält keine Mitglieder.</td></tr>`
+    }
+    table.innerHTML = content
+    openDialog("AnwesenheitDialogMitgliederAuswahl")
+}
+
+// --- Anwesenheit Ende ---
 
 // --- Verwaltung Start ---
 
@@ -250,7 +444,6 @@ function verwaltungUpdateTableMitglieder() {
 
     // Öffnet den Dialog zum Bearbeiten eines Mitglieds
 function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: String = memberName, erstellen: boolean
-    let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
     let title = document.getElementById("VerwaltungDialogMitgliedBearbeitenTitel")
     if (!erstellen) {
         title.innerText = "Mitglied bearbeiten"
@@ -264,11 +457,13 @@ function verwaltungDialogMitgliedBearbeiten(name, erstellen = false) { // Name: 
     let inputGroups = document.getElementById("VerwaltungDialogMitgliedBearbeitenGruppen")
     let inputGroupsContent = ""
     let groupKeys = Object.keys(data["groups"])
-    let checkedTranslate = {true: ' checked = "true"', false: ''}
     for (let i in groupKeys.sort()) {
         if (!erstellen) {
-            let groupMember = data["members"][name]["groups"].includes(groupKeys[i])
-            inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}"${checkedTranslate[groupMember]}>${groupKeys[i]}</label>`
+            inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}"`
+            if (data["members"][name]["groups"].includes(groupKeys[i])) {
+                inputGroupsContent += " checked"
+            }
+            inputGroupsContent += `>${groupKeys[i]}</label>`
         } else {
             inputGroupsContent += `<label><input type="checkbox" id="VerwaltungDialogMitgliedBearbeitenGruppen_${i}">${groupKeys[i]}</label>`
         }
@@ -334,7 +529,12 @@ function verwaltungDialogMitgliedBearbeitenSpeichern(name) {
 // führt den Prozess zum Abbrechen der Bearbeitung eines Mitglieds aus
 function verwaltungDialogMitgliedBearbeitenAbbrechen(name) {
     let dialog = document.getElementById("VerwaltungDialogMitgliedBearbeiten")
-    let oldMember = data["members"][name]
+    let oldMember
+    if (data["members"].hasOwnProperty(name)) { // bearbeiten
+        oldMember = data["members"][name]
+    } else { // erstellen
+        oldMember = copy(dataEmptyMember)
+    }
     let newMember = copy(dataEmptyMember)
 
     // groups
@@ -385,11 +585,7 @@ function verwaltungDialogMitgliedBearbeitenLoeschen(name) {
 function verwaltungDialogMitgliedErstellen() {
     let name = "Neues Mitglied"
     while (data["members"].hasOwnProperty(name)) {
-        if (name.endsWith(")") && name.substring(0, name.length-2).endsWith("(")) {
-            name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
-        } else {
-            name += " (1)"
-        }
+        name = createNewName(name)
     }
     verwaltungDialogMitgliedBearbeiten(name, true)
 }
@@ -406,7 +602,6 @@ function verwaltungUpdateTableGruppen() {
 
     // öffnet den Dialog zum Bearbeiten einer Gruppe
 function verwaltungDialogGruppeBearbeiten(name, erstellen = false) {
-    let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
     let title = document.getElementById("VerwaltungDialogGruppeBearbeitenTitel")
     if (!erstellen) {
         title.innerText = "Gruppe bearbeiten"
@@ -477,7 +672,12 @@ function verwaltungDialogGruppeBearbeitenSpeichern(name) {
     // führt den Prozess zum Abbrechen der Bearbeitung einer Gruppe aus
 function verwaltungDialogGruppeBearbeitenAbbrechen(name) {
     let dialog = document.getElementById("VerwaltungDialogGruppeBearbeiten")
-    let oldGroup = data["groups"][name]
+    let oldGroup
+    if (data["groups"].hasOwnProperty(name)) { // bearbeiten
+        oldGroup = data["groups"][name]
+    } else { // erstellen
+        oldGroup = copy(dataEmptyGroup)
+    }
     let newGroup = copy(dataEmptyGroup)
 
     if (verwaltungDialogGruppeBearbeitenHatAenderung(name, oldGroup, newGroup)) {
@@ -490,6 +690,7 @@ function verwaltungDialogGruppeBearbeitenAbbrechen(name) {
     // überprüft ob Änderungen an den Daten im Dialog vom Mitglied vorgenommen wurden
 function verwaltungDialogGruppeBearbeitenHatAenderung(name, oldGroup, newGroup) {
     let changed = false
+    console.log(oldGroup, newGroup) // temp, damit nicht länger meckert; Vars könnten später noch benötigt werde
 
     // name
     let inputName = document.getElementById("VerwaltungDialogGruppeBearbeitenName").value
@@ -523,11 +724,7 @@ function verwaltungDialogGruppeBearbeitenLoeschen(name) {
 function verwaltungDialogGruppeErstellen() {
     let name = "Neue Gruppe"
     while (data["groups"].hasOwnProperty(name)) {
-        if (name.endsWith(")") && name.substring(0, name.length-2).endsWith("(")) {
-            name = name.substring(0, name.length-2) + (parseInt(name.substring(name.length-2, name.length-1)) + 1) + ")"
-        } else {
-            name += " (1)"
-        }
+        name = createNewName(name)
     }
     verwaltungDialogGruppeBearbeiten(name, true)
 }
@@ -554,3 +751,6 @@ function einstellungenResetData() {
 }
 
 // --- Einstellungen Ende ---
+
+// Öffnet die erste verfügbare Seite
+page(document.getElementsByClassName("page")[0].id)
