@@ -28,7 +28,8 @@
         <table id="AnwesenheitTabelleGruppenAuswahl"></table>
         <hr>
         <div class="floatingBottomButtons">
-            <button onclick="">weiter</button>
+            <button onclick="page('AnwesenheitÜbersicht')">zurück</button>
+            <button onclick="page('AnwesenheitEingabe')">weiter</button>
         </div>
     </div>
     <dialog class="full-screen-dialog" id="AnwesenheitDialogMitgliederAuswahl">
@@ -37,9 +38,18 @@
         <div class="spacer"></div>
         <div class="bottom-buttons">
             <button id="AnwesenheitDialogMitgliederAuswahlSchließen">schließen</button>
-            <button id="AnwesenheitDialogMitgliederAuswahlAbbrechen">abbrechen</button>
+            <button id="AnwesenheitDialogMitgliederAuswahlAbbrechen">Änderungen verwerfen</button>
         </div>
     </dialog>
+    <div class="page" id="AnwesenheitEingabe">
+        <h2>Anwesenheit</h2>
+        <table id="AnwesenheitEingabeTabelleMitglieder"></table>
+        <hr>
+        <div class="floatingBottomButtons">
+            <button onclick="page('Anwesenheit')">zurück</button>
+            <button onclick="">speichern</button>
+        </div>
+    </div>
     <div class="page" id="Verwaltung">
         <h2>Verwaltung</h2>
         <table id="VerwaltungTabelleMitglieder"></table>

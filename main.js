@@ -14,6 +14,10 @@ saveData(data)
 
     // speichert, welche Mitglieder für die Anwesenheit ausgewählt wurden
 let anwesenheitSelectedMembers = []
+let _anwesenheitSelectedMembers = [] // Backup, falls die Änderungen in dem Auswahldialog verworfen werden sollen
+
+    // speichert, welche Mitglieder derzeit in dem Dialog zu sehen sind
+let anwesenheitDialogMitgliederAuswahlMitglieder = []
 
 // --- Setup Ende ---
 
@@ -38,7 +42,12 @@ function toggleNav() {
     // Zeigt die ausgewählte Seite an
 function page(selectedPage) { // selectedPage: String = htmlId
     let pages = Array.from(document.getElementsByClassName("page"));
-    let pageFunctions = {"Anwesenheit": [anwesenheitUpdateDatumAuswahl, anwesenheitUpdateTableGruppenAuswahl], "Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]} // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
+    // die Funktionen, die beim Aufrufen einer Seite ausgeführt werden sollen
+    let pageFunctions = {
+        "Anwesenheit": [anwesenheitUpdateDatumAuswahl, anwesenheitUpdateTableGruppenAuswahl],
+        "AnwesenheitEingabe": [anwesenheitEingabeUpdateTableMitglieder],
+        "Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]
+    }
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
             pages[i].style.display = "block"
@@ -167,7 +176,12 @@ function toggleCheckmark(checkmarkId) {
     let checkmark = document.getElementById(checkmarkId)
     checkmark.checked = !checkmark.checked;
     if(checkmarkId.startsWith("AnwesenheitTabelleAuswahl_")) {
-        anwesenheitTableGruppenAuswahlCheckmarkUpdate(parseInt(checkmarkId.substring("AnwesenheitTabelleAuswahl_".length)))
+        anwesenheitTableGruppenAuswahlCheckmarkUpdate(parseInt(checkmarkId.split("_")[1]))
+    } else if (checkmarkId.startsWith("AnwesenheitEingabeTabelleMitglieder_")) {
+        let arr = checkmarkId.split("_")
+        anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(parseInt(arr[2]), parseInt(arr[1]))
+    } else if (checkmarkId.startsWith("AnwesenheitTabelleMitgliederAuswahl_")) {
+        anwesenheitDialogMitgliederAuswahlCheckmarkUpdate(parseInt(checkmarkId.split("_")[1]))
     }
 }
 
@@ -346,6 +360,11 @@ function anwesenheitUpdateTableGruppenAuswahl(recreate = true) {
                     element.classList.add("anwesenheitGroupWithEdits")
                 }
             }
+        } else { // keine Mitglieder ausgewählt
+            let element = document.getElementById(`AnwesenheitTabelleAuswahl_0_p`)
+            if (element.classList.contains("anwesenheitGroupWithEdits")) {
+                element.classList.remove("anwesenheitGroupWithEdits")
+            }
         }
     }
 }
@@ -382,19 +401,14 @@ function anwesenheitTableGruppenAuswahlCheckmarkUpdate(index) {
         }
 
         anwesenheitUpdateTableGruppenAuswahl(false)
-
-        let allTrue = true
-        for (let i in groupKeys) {
-            let element = document.getElementById(`AnwesenheitTabelleAuswahl_${i}`)
-            if (i > 0 && element.checked === false && !element.classList.contains("anwesenheitEmptyGroup")) {
-                allTrue = false
-            }
-        }
-        document.getElementById(`AnwesenheitTabelleAuswahl_0`).checked = allTrue;
     }
 }
 
+    // füllt den Dialog mit den Daten für die entsprechende Gruppe und öffnet den Dialog
 function anwesenheitDialogMitgliederAuswahl(index) {
+    _anwesenheitSelectedMembers = copy(anwesenheitSelectedMembers) // backup
+
+    let elem = document.getElementById("AnwesenheitDialogMitgliederAuswahl")
     let groupKeys = ["alle"].concat(Object.keys(data["groups"]).sort())
     let members = []
 
@@ -406,16 +420,35 @@ function anwesenheitDialogMitgliederAuswahl(index) {
         title.innerText = "Mitglieder auswählen"
     }
 
+    let btnSchliessen = document.getElementById("AnwesenheitDialogMitgliederAuswahlSchließen")
+    let btnAbbrechen = document.getElementById("AnwesenheitDialogMitgliederAuswahlAbbrechen")
+    btnSchliessen.onclick = function () {elem.close()}
+    btnAbbrechen.onclick = function () {
+        if (JSON.stringify(anwesenheitSelectedMembers.sort()) === JSON.stringify(_anwesenheitSelectedMembers.sort())) {
+            elem.close()
+        } else {
+            confirmDialog("Bist du sicher, dass du alle deine Änderungen verwerfen möchtest?", "Diese Aktion lässt sich nicht rückgängig machen.",
+                "Abbrechen", doNothing,
+                "Fortfahren", function () {
+                    anwesenheitSelectedMembers = copy(_anwesenheitSelectedMembers)
+                    anwesenheitUpdateTableGruppenAuswahl(false)
+                    elem.close()
+                }
+            )
+        }
+    }
+
     for (let member in data["members"]) {
         if (index === 0 || data["members"][member]["groups"].includes(groupKeys[index])) {
             members.push(member)
         }
     }
-    members = members.sort()
+    members = ["alle"].concat(members.sort())
+    anwesenheitDialogMitgliederAuswahlMitglieder = copy(members)
 
     let content = `<tr><th>Mitglieder auswählen <span class="spacer"></span> <button onclick="toggleTableVisibility('AnwesenheitTabelleMitgliederAuswahl')"><span class="material-symbols-outlined">visibility_off</span></button></th></tr>`
     for (let i in members) {
-        content += `<tr onclick="toggleCheckmark('AnwesenheitTabelleMitgliederAuswahl_${i}')"><td><label onclick="event.stopImmediatePropagation()" for="AnwesenheitTabelleMitgliederAuswahl_${i}"><div id="AnwesenheitTabelleMitgliederAuswahl_${i}_p"><input onchange="anwesenheitTableMitgliederAuswahlCheckmarkUpdate(${i})" type="checkbox" id="AnwesenheitTabelleMitgliederAuswahl_${i}"`
+        content += `<tr onclick="toggleCheckmark('AnwesenheitTabelleMitgliederAuswahl_${i}')"><td><label onclick="event.stopImmediatePropagation()" for="AnwesenheitTabelleMitgliederAuswahl_${i}"><div id="AnwesenheitTabelleMitgliederAuswahl_${i}_p"><input type="checkbox" id="AnwesenheitTabelleMitgliederAuswahl_${i}" onchange="anwesenheitDialogMitgliederAuswahlCheckmarkUpdate(${i})"`
         if (anwesenheitSelectedMembers.includes(members[i])) {
             content += " checked"
         }
@@ -426,6 +459,93 @@ function anwesenheitDialogMitgliederAuswahl(index) {
     }
     table.innerHTML = content
     openDialog("AnwesenheitDialogMitgliederAuswahl")
+}
+
+    // ausgelöst durch Veränderungen an einem Checkmark in der Tabelle
+function anwesenheitDialogMitgliederAuswahlCheckmarkUpdate(index) {
+    name = anwesenheitDialogMitgliederAuswahlMitglieder[index]
+    let elem = document.getElementById(`AnwesenheitTabelleMitgliederAuswahl_${index}`)
+    let i = anwesenheitSelectedMembers.indexOf(name)
+
+    if (index === 0) { // "alle"-Checkmark
+        // Checkmarks aktualisieren
+        for (let j in anwesenheitDialogMitgliederAuswahlMitglieder) {
+            document.getElementById(`AnwesenheitTabelleMitgliederAuswahl_${j}`).checked = elem.checked
+        }
+
+        // Array anwesenheitSelectedMembers aktualisieren
+        if (elem.checked) { // alle hinzugefügt
+            for (let j in anwesenheitDialogMitgliederAuswahlMitglieder) {
+                let jName = anwesenheitDialogMitgliederAuswahlMitglieder[j]
+
+                if (!(jName in anwesenheitSelectedMembers)) {
+                    anwesenheitSelectedMembers.push(jName)
+                }
+            }
+        } else { // alle entfernt
+            for (let j in anwesenheitDialogMitgliederAuswahlMitglieder) {
+                let jName = anwesenheitDialogMitgliederAuswahlMitglieder[j]
+                let p = anwesenheitSelectedMembers.indexOf(jName)
+
+                if (p !== -1) {
+                    anwesenheitSelectedMembers.splice(p, 1)
+                }
+            }
+        }
+    } else {
+        document.getElementById(`AnwesenheitTabelleMitgliederAuswahl_0`).checked = false
+        if (elem.checked && i === -1) { // hinzufügen
+            anwesenheitSelectedMembers.push(name)
+            console.log("removed " + name)
+        } else if (!elem.checked && i >= 0) { // entfernen
+            anwesenheitSelectedMembers.splice(i, 1)
+            console.log("removed " + name)
+        }
+    }
+
+    anwesenheitUpdateTableGruppenAuswahl(false) // aktualisiert die Tabelle
+}
+
+    // aktualisiert die Tabelle
+function anwesenheitEingabeUpdateTableMitglieder() {
+    let table = document.getElementById("AnwesenheitEingabeTabelleMitglieder")
+    let content = `<tr>
+                                <th>Mitglied 
+                                    <span class="spacer"></span> 
+                                    <button onclick="toggleTableVisibility('AnwesenheitEingabeTabelleMitglieder')">
+                                        <span class="material-symbols-outlined">visibility_off</span>
+                                    </button>
+                                </th>
+                            </tr>`
+    for (let i in ["alle"].concat(anwesenheitSelectedMembers)) {
+        content += `
+    <tr onclick="toggleCheckmark('AnwesenheitEingabeTabelleMitglieder_1_${i}')"><td>${["alle"].concat(anwesenheitSelectedMembers)[i]}
+    <span class="spacer"></span>
+    <div>
+        <label for="AnwesenheitEingabeTabelleMitglieder_0_${i}" onclick="event.stopPropagation()">
+            <input type="checkbox" checked id="AnwesenheitEingabeTabelleMitglieder_0_${i}" onclick="event.stopPropagation()" onchange="anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(${i}, 0)"> 
+            angemeldet
+        </label>
+        <label for="AnwesenheitEingabeTabelleMitglieder_1_${i}" onclick="event.stopPropagation()">
+            <input type="checkbox" checked id="AnwesenheitEingabeTabelleMitglieder_1_${i}" onclick="event.stopPropagation()" onchange="anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(${i}, 1)"> 
+            anwesend
+        </label>
+    </div>
+    </td></tr>`
+    }
+    table.innerHTML = content
+}
+
+    // ausgelöst durch Veränderungen an einem Checkmark in der Tabelle
+function anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(indexMember, indexCheckmark) {
+    let element = document.getElementById(`AnwesenheitEingabeTabelleMitglieder_${indexCheckmark}_${indexMember}`)
+    if (indexMember === 0) {
+        for (let i in ["alle"].concat(anwesenheitSelectedMembers)) {
+            document.getElementById(`AnwesenheitEingabeTabelleMitglieder_${indexCheckmark}_${i}`).checked = element.checked
+        }
+    } else {
+        document.getElementById(`AnwesenheitEingabeTabelleMitglieder_${indexCheckmark}_0`).checked = false
+    }
 }
 
 // --- Anwesenheit Ende ---

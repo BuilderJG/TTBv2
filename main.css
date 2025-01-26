@@ -308,7 +308,7 @@ dialog .dialog-content {
     outline: none;
 }
 
-#Anwesenheit hr {
+#Anwesenheit hr, #AnwesenheitEingabe hr {
     margin-bottom: 50px;
 }
 
