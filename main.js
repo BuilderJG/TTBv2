@@ -534,6 +534,24 @@ function anwesenheitEingabeUpdateTableMitglieder() {
     </td></tr>`
     }
     table.innerHTML = content
+
+    // Daten aus Anwesenheit in Tabelle laden
+    let dateString = document.getElementById("AnwesenheitInputDatum").value.split(".").reverse().join("-")
+    let anwesenheit = localStorage.getItem("attendance")
+
+    if (anwesenheit) {
+        anwesenheit = JSON.parse(anwesenheit)
+        if (anwesenheit.hasOwnProperty(dateString)) { // Anwesenheit für Datum wurde bereits gespeichert
+
+            for (let i in ["alle"].concat(anwesenheitSelectedMembers)) {
+                if (i > 0 && anwesenheit[dateString].hasOwnProperty(anwesenheitSelectedMembers[i-1])) { // nicht der "alle" Knopf, Anwesenheit für Mitglied gespeichert
+                    document.getElementById(`AnwesenheitEingabeTabelleMitglieder_0_${i}`).checked = anwesenheit[dateString][anwesenheitSelectedMembers[i-1]][0]
+                    document.getElementById(`AnwesenheitEingabeTabelleMitglieder_1_${i}`).checked = anwesenheit[dateString][anwesenheitSelectedMembers[i-1]][1]
+                }
+            }
+        }
+    }
+
 }
 
     // ausgelöst durch Veränderungen an einem Checkmark in der Tabelle
@@ -545,6 +563,51 @@ function anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(indexMember, in
         }
     } else {
         document.getElementById(`AnwesenheitEingabeTabelleMitglieder_${indexCheckmark}_0`).checked = false
+    }
+}
+
+    // speichert die Anwesenheitsdaten aus der Tabelle
+function anwesenheitEingabeSpeichern() {
+    let dateString = document.getElementById("AnwesenheitInputDatum").value.split(".").reverse().join("-")
+    let anwesenheit = localStorage.getItem("attendance")
+    if (anwesenheit) {
+        anwesenheit = JSON.parse(anwesenheit)
+    } else {
+        anwesenheit = {}
+    }
+    let tableContent = {}
+
+    for (let i in ["alle"].concat(anwesenheitSelectedMembers)) { // Daten aus Tabelle in Object tableContent laden
+        if (i > 0) { // nicht der "alle" Knopf
+            let checkBox0 = document.getElementById(`AnwesenheitEingabeTabelleMitglieder_0_${i}`).checked
+            let checkBox1 = document.getElementById(`AnwesenheitEingabeTabelleMitglieder_1_${i}`).checked
+            tableContent[anwesenheitSelectedMembers[i-1]] = [checkBox0, checkBox1]
+        }
+    }
+
+    let changed = false
+    if (anwesenheit.hasOwnProperty(dateString)) { // Daten wurden bereits einmal gespeichert
+        for (let member in tableContent) {
+            if (
+                (anwesenheit[dateString].hasOwnProperty(member) &&
+                    JSON.stringify(anwesenheit[dateString][member]) !== JSON.stringify(tableContent[member])
+                ) ||
+            !anwesenheit[dateString].hasOwnProperty(member)
+            ) {
+                    anwesenheit[dateString][member] = tableContent[member]
+                    changed = true
+            }
+        }
+    } else { // Anwesenheit wurde für dieses Datum noch nicht gespeichert
+        anwesenheit[dateString] = tableContent
+        changed = true
+    }
+
+    if (changed) {
+        localStorage.setItem("attendance", JSON.stringify(anwesenheit))
+        infoDialog("Deine Änderungen wurden gespeichert.", "Alle deine Änderungen wurden erfolgreich gespeichert.", "Fortfahren", function () {page('Anwesenheit')})
+    } else {
+        page('Anwesenheit')
     }
 }
 
