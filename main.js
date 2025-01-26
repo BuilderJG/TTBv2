@@ -284,7 +284,7 @@ function pad(inString, length) {
 function anwesenheitUpdateDatumAuswahl() {
     let date = new Date()
     let dateInput = document.getElementById("AnwesenheitInputDatum")
-    let datepicker = new Datepicker(dateInput, {"language": "de", "format": "dd-mm-yyyy", "autohide": true})
+    let datepicker = new Datepicker(dateInput, {"language": "de", "format": "dd.mm.yyyy", "autohide": true})
     datepicker.setDate(date)
 }
 
