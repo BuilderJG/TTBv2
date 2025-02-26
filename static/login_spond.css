@@ -1,0 +1,77 @@
+header a {
+    text-decoration: none;
+    color: white;
+    position: absolute;
+    right: 1vh;
+    top: 1vh;
+    margin: 5px;
+    padding: 3px;
+    cursor: pointer;
+    width: 1lh;
+    height: 1lh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+header a:hover {
+    background-color: indianred;
+}
+
+.page:has( > section) {
+    display:flex;
+    justify-content:center;
+}
+
+section {
+    padding: 20px;
+    background-color: lightgray;
+    border: 1px solid gray;
+}
+
+form label {
+    margin-bottom: 25px;
+    font-size: large;
+    display: block;
+}
+
+form a {
+
+    font-size: large;
+    display: block;
+}
+
+form input {
+    margin-top: 5px;
+    width: 15lh;
+    height: 1.25lh;
+}
+
+form a {
+    width: min-content;
+    border: 1px solid black;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #1E3990;
+    color: white;
+}
+
+form a:hover {
+    color: black;
+    background-color: white;
+}
+
+form label input {
+    display: block;
+}
+
+#spond_login_section_credentials {
+    width: 15rlh;
+}
+
+#spond_login-error_message {
+    color: red;
+    width: 100%;
+    text-align: center;
+}

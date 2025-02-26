@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TTB: Login - Spond</title>
+    <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/login_spond.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header>
+    <ul>
+        <li><h1>TTB / Anmelden über Spond</h1></li>
+        <li><a tabindex="1" href="/"><span class="material-symbols-outlined">close</span></a></li>
+    </ul>
+</header>
+<main>
+    <div class="page">
+        <section id="spond_login_section_credentials">
+            <form>
+                <label for="spond_login-mail">
+                    E-Mail-Adresse oder Mobilfunknummer
+                    <input tabindex="2" type="text" name="E-Mail-Adresse oder Mobilfunknummer" id="spond_login-mail">
+                </label>
+                <label for="spond_login-password">
+                    Passwort
+                    <input tabindex="3" type="password" name="Passwort" id="spond_login-password">
+                </label>
+                <a tabindex="4" onclick="submitSpondLoginForm()">Anmelden</a>
+                <p id="spond_login-error_message"></p>
+            </form>
+        </section>
+    </div>
+</main>
+<script src="../static/login_spond.js"></script>
+</body>
+</html>
