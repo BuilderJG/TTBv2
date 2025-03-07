@@ -61,11 +61,11 @@ form label input {
     display: block;
 }
 
-#spond_login_section_credentials {
+#LoginSpondLoginSectionLoginDaten {
     width: 15rlh;
 }
 
-#spond_login-error_message {
+#LoginSpondLoginSectionLoginDatenErrorMessage {
     color: red;
     width: 100%;
     text-align: center;

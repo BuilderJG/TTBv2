@@ -1,6 +1,6 @@
 function submitSpondLoginForm() {
-    let name = document.getElementById("spond_login-mail").value;
-    let password = document.getElementById("spond_login-password").value;
+    let name = document.getElementById("LoginSpondLoginSectionLoginDatenMail").value;
+    let password = document.getElementById("LoginSpondLoginSectionLoginDatenPasswort").value;
 
     fetch("/api/spond", {
         method: "POST",
@@ -11,7 +11,7 @@ function submitSpondLoginForm() {
     }).then(response => response.json())
         .then(data => {
             console.log(data)
-            let login_error_message = document.getElementById("spond_login-error_message")
+            let login_error_message = document.getElementById("LoginSpondLoginSectionLoginDatenErrorMessage")
             if (data["error"] !== "false") {
                 if (data["error"] === "invalid-login") {
                     login_error_message.innerText = "Die Anmeldedaten sind ungültig. Bitte versuche es erneut."
