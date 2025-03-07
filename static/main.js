@@ -19,6 +19,15 @@ let _anwesenheitSelectedMembers = [] // Backup, falls die Änderungen in dem Aus
     // speichert, welche Mitglieder derzeit in dem Dialog zu sehen sind
 let anwesenheitDialogMitgliederAuswahlMitglieder = []
 
+// fügt die Lade-Elemente zu dem Dokument hinzu
+let elem
+elem = document.createElement("div")
+elem.id = "loadingVignette"
+document.body.appendChild(elem)
+elem = document.createElement("div")
+elem.id = "loader"
+document.body.appendChild(elem)
+
 // --- Setup Ende ---
 
 // --- Basis Start ---
@@ -182,6 +191,19 @@ function toggleCheckmark(checkmarkId) {
         anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(parseInt(arr[2]), parseInt(arr[1]))
     } else if (checkmarkId.startsWith("AnwesenheitTabelleMitgliederAuswahl_")) {
         anwesenheitDialogMitgliederAuswahlCheckmarkUpdate(parseInt(checkmarkId.split("_")[1]))
+    }
+}
+
+// wechselt die Anzeige der Ladeanimation
+function toggleLoading(loading) {
+    let vignette = document.getElementById("loadingVignette")
+    let loader = document.getElementById("loader")
+    if (loading) {
+        vignette.style.display = "block"
+        loader.style.display = "block"
+    } else {
+        vignette.style.display = "none"
+        loader.style.display = "none"
     }
 }
 
@@ -937,3 +959,6 @@ function einstellungenResetData() {
 
 // Öffnet die erste verfügbare Seite
 page(document.getElementsByClassName("page")[0].id)
+
+// Stoppt die Ladeanimation
+toggleLoading(false)
