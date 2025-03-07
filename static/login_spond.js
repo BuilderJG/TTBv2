@@ -1,6 +1,11 @@
-function submitSpondLoginForm() {
+let spondData
+
+    // verarbeitet, übermittelt die Anmeldedaten, verarbeitet die Antwort
+function loginSpondLoginSubmitSpondLoginForm() {
     let name = document.getElementById("LoginSpondLoginSectionLoginDatenMail").value;
     let password = document.getElementById("LoginSpondLoginSectionLoginDatenPasswort").value;
+
+    toggleLoading(true)
 
     fetch("/api/spond", {
         method: "POST",
@@ -10,22 +15,22 @@ function submitSpondLoginForm() {
         body: JSON.stringify({"username": name, "password": password, "function": "get_all_groups"})
     }).then(response => response.json())
         .then(data => {
-            console.log(data)
-            let login_error_message = document.getElementById("LoginSpondLoginSectionLoginDatenErrorMessage")
-            if (data["error"] !== "false") {
+            toggleLoading(false)
+
+            let loginErrorMessage = document.getElementById("LoginSpondLoginSectionLoginDatenErrorMessage")
+            if (data["error"] !== "false") { // Fehler aufgetreten
                 if (data["error"] === "invalid-login") {
-                    login_error_message.innerText = "Die Anmeldedaten sind ungültig. Bitte versuche es erneut."
+                    loginErrorMessage.innerText = "Die Anmeldedaten sind ungültig. Bitte versuche es erneut."
                 } else if (data["error"] === "empty") {
-                    login_error_message.innerText = "Das Formular muss ausgefüllt sein."
+                    loginErrorMessage.innerText = "Das Formular muss ausgefüllt sein."
                 } else if (data["error"] === "rate-limited") {
-                    login_error_message.innerText = "Zu viele Anmeldeversuche. Bitte versuche es später erneut."
+                    loginErrorMessage.innerText = "Zu viele Anmeldeversuche. Bitte versuche es später erneut."
                 } else {
-                    login_error_message.innerText = "Ein Fehler ist aufgetreten."
+                    loginErrorMessage.innerText = "Ein Fehler ist aufgetreten."
                 }
             } else {
-                login_error_message.innerText = ""
-                let spond_data = data["data"]
-                console.log(JSON.stringify(spond_data))
+                loginErrorMessage.innerText = ""
+                spondData = data["data"]
             }
         })
 }
