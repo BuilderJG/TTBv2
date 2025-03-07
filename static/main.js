@@ -59,7 +59,11 @@ function page(selectedPage) { // selectedPage: String = htmlId
     }
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
-            pages[i].style.display = "block"
+            if (pages[i].classList.contains("formPage")) {
+                pages[i].style.display = "flex"
+            } else {
+                pages[i].style.display = "block"
+            }
             if (pageFunctions.hasOwnProperty(selectedPage)) { // Führt die Funktionen aus, die mit der Seite verknüpft sind
                 for (let j in pageFunctions[selectedPage]) {
                     pageFunctions[selectedPage][j]();

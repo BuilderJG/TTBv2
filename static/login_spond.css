@@ -19,11 +19,6 @@ header a:hover {
     background-color: indianred;
 }
 
-.page:has( > section) {
-    display:flex;
-    justify-content:center;
-}
-
 section {
     padding: 20px;
     background-color: lightgray;
