@@ -32,29 +32,22 @@ form label {
 }
 
 form a {
-
-    font-size: large;
     display: block;
+    margin-bottom: 25px;
+    font-size: small;
+    color: black;
+    text-decoration: underline;
+}
+
+form a .material-symbols-outlined {
+    font-size: 1lh;
+    text-decoration: underline black;
 }
 
 form input {
     margin-top: 5px;
     width: 15lh;
     height: 1.25lh;
-}
-
-form a {
-    width: min-content;
-    border: 1px solid black;
-    padding: 10px;
-    cursor: pointer;
-    background-color: #1E3990;
-    color: white;
-}
-
-form a:hover {
-    color: black;
-    background-color: white;
 }
 
 form label input {

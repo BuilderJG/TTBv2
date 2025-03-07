@@ -18,7 +18,7 @@
 <main>
     <div class="formPage page" id="LoginSpondLogin">
         <section id="LoginSpondLoginSectionLoginDaten">
-            <form>
+            <form onsubmit="loginSpondLoginSubmitSpondLoginForm(); return false" method="post">
                 <label for="LoginSpondLoginSectionLoginDatenMail">
                     E-Mail-Adresse oder Mobilfunknummer
                     <input tabindex="2" type="text" name="E-Mail-Adresse oder Mobilfunknummer" id="LoginSpondLoginSectionLoginDatenMail">
@@ -27,7 +27,8 @@
                     Passwort
                     <input tabindex="3" type="password" name="Passwort" id="LoginSpondLoginSectionLoginDatenPasswort">
                 </label>
-                <a tabindex="4" onclick="loginSpondLoginSubmitSpondLoginForm()">Anmelden</a>
+                <a href="https://spond.com/landing/login/forgot-password" target="_blank"><span class="material-symbols-outlined">open_in_new</span> Passwort vergessen?</a>
+                <button type="submit">anmelden</button>
                 <p id="LoginSpondLoginSectionLoginDatenErrorMessage"></p>
             </form>
         </section>
