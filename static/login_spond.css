@@ -63,3 +63,13 @@ form label input {
     width: 100%;
     text-align: center;
 }
+
+#LoginSpondAuswahlGruppeDialogInfoGruppe img {
+    border-radius: 50%;
+    height: 5rlh;
+    width: 5rlh;
+    object-fit: cover;
+    position: absolute;
+    left: 1rlh;
+    top: 1rlh;
+}

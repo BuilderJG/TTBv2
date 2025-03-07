@@ -55,7 +55,8 @@ function page(selectedPage) { // selectedPage: String = htmlId
     let pageFunctions = {
         "Anwesenheit": [anwesenheitUpdateDatumAuswahl, anwesenheitUpdateTableGruppenAuswahl],
         "AnwesenheitEingabe": [anwesenheitEingabeUpdateTableMitglieder],
-        "Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen]
+        "Verwaltung": [verwaltungUpdateTableMitglieder, verwaltungUpdateTableGruppen],
+        "LoginSpondAuswahlGruppe": [loginSpondAuswahlGruppeUpdateTableAuswahlGruppen]
     }
     for (let i in pages) { // Versteckt alle Seiten, außer der ausgewählten
         if (pages[i].id === selectedPage) {
@@ -195,6 +196,8 @@ function toggleCheckmark(checkmarkId) {
         anwesenheitEingabeTableMitgliederAuswahlCheckmarkUpdate(parseInt(arr[2]), parseInt(arr[1]))
     } else if (checkmarkId.startsWith("AnwesenheitTabelleMitgliederAuswahl_")) {
         anwesenheitDialogMitgliederAuswahlCheckmarkUpdate(parseInt(checkmarkId.split("_")[1]))
+    } else if (checkmarkId.startsWith("LoginSpondAuswahlGruppeTableGruppen_")) {
+        loginSpondAuswahlGruppeUpdateCheckmarkAuswahlGruppen(parseInt(checkmarkId.split("_")[1]))
     }
 }
 
