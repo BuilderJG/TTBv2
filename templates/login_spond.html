@@ -38,7 +38,7 @@
         <table id="LoginSpondAuswahlGruppeTableGruppen"></table>
         <div class="floatingBottomButtons">
             <button onclick="page('LoginSpondLogin')">abbrechen</button>
-            <button onclick="page('LoginSpondAuswahlDaten')">weiter</button>
+            <button onclick="page('LoginSpondImportFinalize')">weiter</button>
         </div>
     </div>
     <dialog class="full-screen-dialog" id="LoginSpondAuswahlGruppeDialogInfoGruppe">
@@ -54,6 +54,15 @@
             <button id="LoginSpondAuswahlGruppeDialogInfoGruppeSchließen">schließen</button>
         </div>
     </dialog>
+    <div class="page" id="LoginSpondImportFinalize">
+        <h2>Datenimport abschließen</h2>
+        <p>Beim Fortfahren werden alle bestehenden Daten überschrieben. Dies kann nicht rückgängig gemacht werden.</p>
+        <p>Soll der Datenimport dennoch abgeschlossen werden?</p>
+        <div class="floatingBottomButtons">
+            <button onclick="page('LoginSpondAuswahlGruppe')">zurück</button>
+            <button onclick="">abschließen</button>
+        </div>
+    </div>
 </main>
 <script src="../static/login_spond.js"></script>
 <script src="../static/main.js"></script>
