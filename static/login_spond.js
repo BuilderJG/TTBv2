@@ -26,8 +26,6 @@ function loginSpondLoginSubmitSpondLoginForm() {
             if (data["error"] !== "false") { // Fehler aufgetreten
                 if (data["error"] === "invalid-login") {
                     loginErrorMessage.innerText = "Die Anmeldedaten sind ungültig. Bitte versuche es erneut."
-                } else if (data["error"] === "empty") {
-                    loginErrorMessage.innerText = "Das Formular muss ausgefüllt sein."
                 } else if (data["error"] === "rate-limited") {
                     loginErrorMessage.innerText = "Zu viele Anmeldeversuche. Bitte versuche es später erneut."
                 } else {

@@ -28,8 +28,6 @@ def spond_api():
         password = body["password"]
         function = body["function"]
         data = {}
-        if not (username and password):
-            return {"error": "empty"}
         if function == "check_login":
             asyncio.run(check_login_spond(username, password))
         if function == "get_all_groups":
